@@ -25,14 +25,14 @@ type priceSchema struct {
 	Price    float32 `json:"value"`
 }
 
-// Make the Attrs struct implement the driver.Value interface. This method
-// simply returns the JSON-encoded representation of the struct.
+// Make the priceSchemaSlice type implement the driver.Value interface.
+// This method simply returns the JSON-encoded representation of the struct.
 func (ps priceSchemaSlice) Value() (driver.Value, error) {
 	return json.Marshal(ps)
 }
 
-// Make the Attrs struct implement the sql.Scanner interface. This method
-// simply decodes a JSON-encoded value into the struct fields.
+// Make the priceSchemaSlice type implement the sql.Scanner interface.
+// This method simply decodes a JSON-encoded value into the struct fields.
 func (ps *priceSchemaSlice) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
