@@ -26,24 +26,30 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 }
 
 // Save implements the pvpc.PricesRepository interface.
-func (r *PricesRepository) Save(ctx context.Context, prices pvpc.Prices) error {
-	pricesSQLStruct := sqlbuilder.NewStruct(new(sqlPrices))
+func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error {
+	pricesSQLStruct := sqlbuilder.NewStruct(new(pricesSchema))
 
-	values := make([]sqlPrice, len(prices.Values()))
-	for i, v := range prices.Values() {
-		values[i] = sqlPrice{
-			Datetime: v.Datetime(),
-			Value:    v.Value(),
+	dbPrices := make([]pricesSchema, len(prices))
+
+	for i, p := range prices {
+		values := make([]priceSchema, len(p.Values()))
+		for j, v := range p.Values() {
+			values[j] = priceSchema{
+				Datetime: v.Datetime(),
+				Value:    v.Value(),
+			}
+		}
+
+		dbPrices[i] = pricesSchema{
+			ID:      p.ID().String(),
+			Date:    p.Date(),
+			GeoId:   p.GeoId(),
+			GeoName: p.GeoName(),
+			Values:  values,
 		}
 	}
 
-	query, args := pricesSQLStruct.InsertInto(sqlPricesTable, sqlPrices{
-		ID:      prices.ID().String(),
-		Date:    prices.Date(),
-		GeoId:   prices.GeoId(),
-		GeoName: prices.GeoName(),
-		Values:  values,
-	}).Build()
+	query, args := pricesSQLStruct.InsertInto(pricesTableName, dbPrices).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()

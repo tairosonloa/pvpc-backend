@@ -66,7 +66,7 @@ func (id PricesID) String() string {
 
 // PricesRepository defines the expected behavior from a prices storage.
 type PricesRepository interface {
-	Save(ctx context.Context, prices Prices) error
+	Save(ctx context.Context, prices []Prices) error
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=PricesRepository
