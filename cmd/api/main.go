@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
 	"go-pvpc/internal/platform/server"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -26,7 +29,15 @@ type config struct {
 }
 
 func main() {
+	var err error
 	cfg := load_config()
+
+	db, err := database_connection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
+	if err != nil {
+		log.Fatal("Error connecting to database", err)
+	}
+	defer db.Close()
+
 	srv := server.New(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout)
 	srv.Run()
 }
@@ -40,4 +51,9 @@ func load_config() config {
 		log.Fatal("Error processing env config", err)
 	}
 	return cfg
+}
+
+func database_connection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
+	return sql.Open("pgx", connStr)
 }
