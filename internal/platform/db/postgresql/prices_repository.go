@@ -27,16 +27,16 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 
 // Save implements the pvpc.PricesRepository interface.
 func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error {
-	pricesSQLStruct := sqlbuilder.NewStruct(new(pricesSchema))
+	qb := sqlbuilder.NewStruct(new(pricesSchema))
 
-	dbPrices := make([]pricesSchema, len(prices))
+	dbPrices := make([]interface{}, len(prices))
 
 	for i, p := range prices {
 		values := make([]priceSchema, len(p.Values()))
 		for j, v := range p.Values() {
 			values[j] = priceSchema{
 				Datetime: v.Datetime(),
-				Value:    v.Value(),
+				Price:    v.Value(),
 			}
 		}
 
@@ -45,11 +45,11 @@ func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error
 			Date:    p.Date(),
 			GeoId:   p.GeoId(),
 			GeoName: p.GeoName(),
-			Values:  values,
+			Prices:  values,
 		}
 	}
 
-	query, args := pricesSQLStruct.InsertInto(pricesTableName, dbPrices).Build()
+	query, args := qb.InsertInto(pricesTableName, dbPrices...).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()

@@ -3,6 +3,7 @@ module go-pvpc
 go 1.20
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/huandu/go-sqlbuilder v1.22.0
 	github.com/jackc/pgx/v5 v5.4.3

@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
     "Datetime",
-    "Pvpc"
+    "Pvpc",
+    "sqlmock",
+    "stretchr"
   ]
 }

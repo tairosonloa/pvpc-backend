@@ -13,10 +13,13 @@ type PricesDto struct {
 	Date    string
 	GeoId   string
 	GeoName string
-	Values  []struct {
-		Datetime string
-		Value    float32
-	}
+	Values  []PriceDto
+}
+
+// PriceDto is the DTO structure that represents a PVPC price for a specific hour.
+type PriceDto struct {
+	Datetime string
+	Value    float32
 }
 
 // Prices is the domain structure that represents PVPC prices for a day.
