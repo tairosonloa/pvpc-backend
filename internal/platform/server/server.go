@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,9 +19,15 @@ type Server struct {
 	httpAddr        string
 	engine          *gin.Engine
 	shutdownTimeout time.Duration
+	storage         storage
 }
 
-func New(host string, port uint, env string, shutdownTimeout time.Duration) Server {
+type storage struct {
+	db        *sql.DB
+	dbTimeout time.Duration
+}
+
+func New(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) Server {
 	if env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -28,6 +35,10 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration) Serv
 		engine:          gin.Default(),
 		httpAddr:        fmt.Sprintf("%s:%d", host, port),
 		shutdownTimeout: shutdownTimeout,
+		storage: storage{
+			db:        db,
+			dbTimeout: dbTimeout,
+		},
 	}
 
 	srv.registerRoutes()
@@ -36,7 +47,7 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration) Serv
 }
 
 func (s *Server) registerRoutes() {
-	s.engine.GET("/health", health.HealthCheckHandler())
+	s.engine.GET("/health", health.HealthCheckHandler(s.storage.db, s.storage.dbTimeout))
 }
 
 func (s *Server) Run() {

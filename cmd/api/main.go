@@ -38,7 +38,7 @@ func main() {
 	}
 	defer db.Close()
 
-	srv := server.New(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout)
+	srv := server.New(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout)
 	srv.Run()
 }
 
