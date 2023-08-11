@@ -1,6 +1,7 @@
 package pvpc
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"regexp"
@@ -9,14 +10,14 @@ import (
 // PricesZoneDto is the DTO structure that represents a PVPC prices zone.
 type PricesZoneDto struct {
 	ID         string
-	ExternalId string
+	ExternalID string
 	Name       string
 }
 
 // PricesZone represents a PVPC prices zone.
 type PricesZone struct {
 	id         PricesZoneID
-	externalId string
+	externalID string
 	name       string
 }
 
@@ -50,6 +51,16 @@ func (id PricesZoneID) String() string {
 	return id.value
 }
 
+// PricesZoneRepository defines the expected behavior from a prices storage.
+type PricesZoneRepository interface {
+	// GetAll returns all the prices zones.
+	GetAll(ctx context.Context) ([]PricesZone, error)
+	// GetByID returns the prices zone with the given ID.
+	GetByID(ctx context.Context, id PricesZoneID) (PricesZone, error)
+	// GetByExternalID returns the prices zone with the given external ID.
+	GetByExternalID(ctx context.Context, externalID string) (PricesZone, error)
+}
+
 // NewPricesZone creates a new PricesZone struct.
 func NewPricesZone(pricesZoneDto PricesZoneDto) (PricesZone, error) {
 	idVO, err := NewPricesZoneID(pricesZoneDto.ID)
@@ -59,7 +70,7 @@ func NewPricesZone(pricesZoneDto PricesZoneDto) (PricesZone, error) {
 
 	pricesZone := PricesZone{
 		id:         idVO,
-		externalId: pricesZoneDto.ExternalId,
+		externalID: pricesZoneDto.ExternalID,
 		name:       pricesZoneDto.Name,
 	}
 
@@ -71,12 +82,12 @@ func (c PricesZone) ID() PricesZoneID {
 	return c.id
 }
 
-// Date returns the PricesZone external ID.
-func (c PricesZone) ExternalId() string {
-	return c.externalId
+// ExternalID returns the PricesZone external ID.
+func (c PricesZone) ExternalID() string {
+	return c.externalID
 }
 
-// GeoId returns the PricesZone Name.
+// Name returns the PricesZone Name.
 func (c PricesZone) Name() string {
 	return c.name
 }
