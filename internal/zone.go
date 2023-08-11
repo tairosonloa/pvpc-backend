@@ -27,6 +27,7 @@ type PricesZoneID struct {
 }
 
 var ErrInvalidPricesZoneID = errors.New("invalid PricesZone ID. It must be three capital letters")
+var ErrPricesZoneNotFound = errors.New("prices zone not found")
 
 // NewPricesZoneID instantiate the VO for PricesZoneID.
 func NewPricesZoneID(value string) (PricesZoneID, error) {

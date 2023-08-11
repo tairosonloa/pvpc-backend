@@ -42,11 +42,14 @@ func (r *PricesZoneRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, e
 	zones := make([]pvpc.PricesZone, 0, 5)
 	for rows.Next() {
 		var dbZone zoneSchema
-		rows.Scan(zoneStruct.Addr(&dbZone)...)
+		err := rows.Scan(zoneStruct.Addr(&dbZone)...)
+		if err != nil {
+			return nil, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+		}
 
 		zone, err := mapDbPricesZoneToDomain(dbZone)
 		if err != nil {
-			return nil, fmt.Errorf("error mapping prices zone from database: %v", err)
+			return nil, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
 		}
 		zones = append(zones, zone)
 	}
@@ -66,11 +69,18 @@ func (r *PricesZoneRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID
 	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	row.Scan(zoneStruct.Addr(&dbZone)...)
+	err := row.Scan(zoneStruct.Addr(&dbZone)...)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return pvpc.PricesZone{}, pvpc.ErrPricesZoneNotFound
+		}
+		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database: %v", err)
+		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
 	}
 
 	return zone, nil
@@ -87,11 +97,17 @@ func (r *PricesZoneRepository) GetByExternalID(ctx context.Context, externalID s
 	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	row.Scan(zoneStruct.Addr(&dbZone)...)
+	err := row.Scan(zoneStruct.Addr(&dbZone)...)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return pvpc.PricesZone{}, pvpc.ErrPricesZoneNotFound
+		}
+		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database: %v", err)
+		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
 	}
 
 	return zone, nil
