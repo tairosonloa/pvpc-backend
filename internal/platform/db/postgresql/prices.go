@@ -8,7 +8,6 @@ import (
 
 const (
 	pricesTableName = "prices"
-	zonesTableName  = "zones"
 )
 
 type pricesSchema struct {
@@ -23,12 +22,6 @@ type priceSchemaSlice []priceSchema
 type priceSchema struct {
 	Datetime string  `json:"datetime"`
 	Price    float32 `json:"value"`
-}
-
-type zonesSchema struct {
-	ID         string `db:"id"`
-	ExternalId string `db:"external_id"`
-	Name       string `db:"name"`
 }
 
 // Make the priceSchemaSlice type implement the driver.Value interface.
