@@ -27,7 +27,7 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 
 // Save implements the pvpc.PricesRepository interface.
 func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error {
-	qb := sqlbuilder.NewStruct(new(pricesSchema))
+	pricesStruct := sqlbuilder.NewStruct(new(pricesSchema))
 
 	dbPrices := make([]interface{}, len(prices))
 
@@ -40,23 +40,22 @@ func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error
 			}
 		}
 
-		// TODO store zone in a separate table if doesnt exist
 		dbPrices[i] = pricesSchema{
 			ID:     p.ID().String(),
 			Date:   p.Date(),
-			ZoneId: p.Zone().ID().String(),
+			ZoneID: p.Zone().ID().String(),
 			Prices: values,
 		}
 	}
 
-	query, args := qb.InsertInto(pricesTableName, dbPrices...).Build()
+	query, args := pricesStruct.InsertInto(pricesTableName, dbPrices...).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
 	_, err := r.db.ExecContext(ctxTimeout, query, args...)
 	if err != nil {
-		return fmt.Errorf("error trying to persist prices on database: %v", err)
+		return fmt.Errorf("error trying to persist prices into database: %v", err)
 	}
 
 	return nil

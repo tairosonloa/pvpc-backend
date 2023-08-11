@@ -13,7 +13,7 @@ const (
 type pricesSchema struct {
 	ID     string           `db:"id"`
 	Date   string           `db:"date"`
-	ZoneId string           `db:"zone_id"`
+	ZoneID string           `db:"zone_id"`
 	Prices priceSchemaSlice `db:"values"`
 }
 

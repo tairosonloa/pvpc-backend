@@ -67,6 +67,7 @@ func (id PricesID) String() string {
 
 // PricesRepository defines the expected behavior from a prices storage.
 type PricesRepository interface {
+	// Save persists the given prices.
 	Save(ctx context.Context, prices []Prices) error
 }
 
