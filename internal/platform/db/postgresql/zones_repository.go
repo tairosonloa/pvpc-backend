@@ -43,6 +43,7 @@ func (r *PricesZoneRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, e
 	for rows.Next() {
 		var dbZone zoneSchema
 		rows.Scan(zoneStruct.Addr(&dbZone)...)
+
 		zone, err := mapDbPricesZoneToDomain(dbZone)
 		if err != nil {
 			return nil, fmt.Errorf("error mapping prices zone from database: %v", err)
@@ -62,14 +63,10 @@ func (r *PricesZoneRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
-	rows, err := r.db.QueryContext(ctxTimeout, query, args...)
-	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error querying prices zone from database: %v", err)
-	}
-	defer rows.Close()
+	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	rows.Scan(zoneStruct.Addr(&dbZone)...)
+	row.Scan(zoneStruct.Addr(&dbZone)...)
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
@@ -87,14 +84,10 @@ func (r *PricesZoneRepository) GetByExternalID(ctx context.Context, externalID s
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
-	rows, err := r.db.QueryContext(ctxTimeout, query, args...)
-	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error querying prices zone from database: %v", err)
-	}
-	defer rows.Close()
+	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	rows.Scan(zoneStruct.Addr(&dbZone)...)
+	row.Scan(zoneStruct.Addr(&dbZone)...)
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
