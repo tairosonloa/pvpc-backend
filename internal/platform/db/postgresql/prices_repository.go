@@ -40,12 +40,12 @@ func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error
 			}
 		}
 
+		// TODO store zone in a separate table if doesnt exist
 		dbPrices[i] = pricesSchema{
-			ID:      p.ID().String(),
-			Date:    p.Date(),
-			GeoId:   p.GeoId(),
-			GeoName: p.GeoName(),
-			Prices:  values,
+			ID:     p.ID().String(),
+			Date:   p.Date(),
+			ZoneId: p.Zone().ID().String(),
+			Prices: values,
 		}
 	}
 

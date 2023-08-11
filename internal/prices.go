@@ -9,11 +9,10 @@ import (
 
 // PricesDto is the DTO structure that represents the PVPC prices for a day.
 type PricesDto struct {
-	ID      string
-	Date    string
-	GeoId   string
-	GeoName string
-	Values  []PriceDto
+	ID     string
+	Date   string
+	Zone   PricesZoneDto
+	Values []PriceDto
 }
 
 // PriceDto is the DTO structure that represents a PVPC price for a specific hour.
@@ -24,11 +23,10 @@ type PriceDto struct {
 
 // Prices is the domain structure that represents PVPC prices for a day.
 type Prices struct {
-	id      PricesID
-	date    string
-	geoId   string
-	geoName string
-	values  []Price
+	id     PricesID
+	date   string
+	zone   PricesZone
+	values []Price
 }
 
 // Price is the domain structure that represents a PVPC price for a specific hour.
@@ -42,15 +40,15 @@ type PricesID struct {
 	value string
 }
 
-var ErrInvalidPricesID = errors.New("invalid Prices ID")
+var ErrInvalidPricesID = errors.New("invalid Prices ID. It must be in the shape of ZONE_ID-YYYY-MM-DD")
 
 // NewPricesID instantiate the VO for PricesID
 func NewPricesID(value string) (PricesID, error) {
-	if len(value) != 15 { // GEOID-YYYY-MM-DD, where geoid is a 4 digit number
+	if len(value) != 14 { // ZONE_ID-YYYY-MM-DD, where ZONE_ID is the PricesZoneID (3 uppercase letters)
 		return PricesID{}, fmt.Errorf("%w: %s", ErrInvalidPricesID, value)
 	}
 
-	re := regexp.MustCompile(`\d{4}-\d{4}-\d{2}-\d{2}`)
+	re := regexp.MustCompile(`[A-Z]{3}-\d{4}-\d{2}-\d{2}`)
 	matches := re.MatchString(value)
 
 	if !matches {
@@ -72,11 +70,14 @@ type PricesRepository interface {
 	Save(ctx context.Context, prices []Prices) error
 }
 
-//go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=PricesRepository
-
 // NewPrices creates a new Prices struct.
 func NewPrices(pricesDto PricesDto) (Prices, error) {
 	idVO, err := NewPricesID(pricesDto.ID)
+	if err != nil {
+		return Prices{}, err
+	}
+
+	zone, err := NewPricesZone(pricesDto.Zone)
 	if err != nil {
 		return Prices{}, err
 	}
@@ -90,47 +91,41 @@ func NewPrices(pricesDto PricesDto) (Prices, error) {
 	}
 
 	prices := Prices{
-		id:      idVO,
-		date:    pricesDto.Date,
-		geoId:   pricesDto.GeoId,
-		geoName: pricesDto.GeoName,
-		values:  pricesValues,
+		id:     idVO,
+		date:   pricesDto.Date,
+		zone:   zone,
+		values: pricesValues,
 	}
 
 	return prices, nil
 }
 
-// ID returns the prices unique identifier.
+// ID returns the Prices unique identifier.
 func (c Prices) ID() PricesID {
 	return c.id
 }
 
-// Date returns the prices date.
+// Date returns the Prices date.
 func (c Prices) Date() string {
 	return c.date
 }
 
-// GeoId returns the prices geoId.
-func (c Prices) GeoId() string {
-	return c.geoId
+// Zone returns the PricesZone for this Prices.
+func (c Prices) Zone() PricesZone {
+	return c.zone
 }
 
-// GeoName returns the prices geoName.
-func (c Prices) GeoName() string {
-	return c.geoName
-}
-
-// Values returns the prices values.
+// Values returns the Prices values.
 func (c Prices) Values() []Price {
 	return c.values
 }
 
-// Datetime returns the price datetime.
+// Datetime returns the Price datetime.
 func (p Price) Datetime() string {
 	return p.datetime
 }
 
-// Value returns the price value.
+// Value returns the Price value.
 func (p Price) Value() float32 {
 	return p.value
 }

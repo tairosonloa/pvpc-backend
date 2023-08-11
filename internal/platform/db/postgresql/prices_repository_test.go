@@ -13,25 +13,24 @@ import (
 )
 
 func Test_CourseRepository_Save_RepositoryError(t *testing.T) {
-	id1, date1, geoId1, geoName1 := "1234-2023-08-10", "2023-08-10", "1234", "Test GeoName"
-	id2, date2, geoId2, geoName2 := "5678-2023-08-10", "2023-08-10", "5678", "Test GeoName"
+	id1, date1 := "ZON-2023-08-10", "2023-08-10"
+	id2, date2 := "ZON-2023-08-10", "2023-08-10"
+	zoneId, zoneExternalId, zoneName := "ZON", "123", "Test zone"
 	datetime, value := "2023-08-10T00:00:00+02:00", float32(0.1234)
 
 	prices1, err := pvpc.NewPrices(pvpc.PricesDto{
-		ID:      id1,
-		Date:    date1,
-		GeoId:   geoId1,
-		GeoName: geoName1,
-		Values:  []pvpc.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
+		ID:     id1,
+		Date:   date1,
+		Zone:   pvpc.PricesZoneDto{ID: zoneId, ExternalId: zoneExternalId, Name: zoneName},
+		Values: []pvpc.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
 	})
 	require.NoError(t, err)
 
 	prices2, err := pvpc.NewPrices(pvpc.PricesDto{
-		ID:      id2,
-		Date:    date2,
-		GeoId:   geoId2,
-		GeoName: geoName2,
-		Values:  []pvpc.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
+		ID:     id2,
+		Date:   date2,
+		Zone:   pvpc.PricesZoneDto{ID: zoneId, ExternalId: zoneExternalId, Name: zoneName},
+		Values: []pvpc.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
 	})
 	require.NoError(t, err)
 
@@ -41,8 +40,8 @@ func Test_CourseRepository_Save_RepositoryError(t *testing.T) {
 	values := priceSchemaSlice{{Datetime: datetime, Price: value}, {Datetime: datetime, Price: value}}
 
 	sqlMock.ExpectExec(
-		"INSERT INTO prices (id, date, geo_id, geo_name, values) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)").
-		WithArgs(id1, date1, geoId1, geoName1, values, id2, date2, geoId2, geoName2, values).
+		"INSERT INTO prices (id, date, zone_id, values) VALUES (?, ?, ?, ?), (?, ?, ?, ?)").
+		WithArgs(id1, date1, zoneId, values, id2, date2, zoneId, values).
 		WillReturnError(errors.New("test-error"))
 
 	repo := NewPricesRepository(db, 1*time.Millisecond)
