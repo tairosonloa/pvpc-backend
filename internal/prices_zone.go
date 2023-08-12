@@ -2,9 +2,9 @@ package pvpc
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"regexp"
+
+	"go-pvpc/internal/errors"
 )
 
 // PricesZoneDto is the DTO structure that represents a PVPC prices zone.
@@ -26,20 +26,17 @@ type PricesZoneID struct {
 	value string
 }
 
-var ErrInvalidPricesZoneID = errors.New("invalid PricesZone ID. It must be three capital letters")
-var ErrPricesZoneNotFound = errors.New("prices zone not found")
-
 // NewPricesZoneID instantiate the VO for PricesZoneID.
 func NewPricesZoneID(value string) (PricesZoneID, error) {
-	if len(value) != 3 { // ID consist of 3 uppercase letters (A-Z) representing the zone.
-		return PricesZoneID{}, fmt.Errorf("%w: %s", ErrInvalidPricesZoneID, value)
+	// ID consist of 3 uppercase letters (A-Z) representing the zone.
+	err := errors.NewDomainError(errors.InvalidPricesZoneID, "invalid PricesZone ID: %s. It must be three capital letters", value)
+
+	if len(value) != 3 {
+		return PricesZoneID{}, err
 	}
 
-	re := regexp.MustCompile(`[A-Z]{3}`)
-	matches := re.MatchString(value)
-
-	if !matches {
-		return PricesZoneID{}, fmt.Errorf("%w: %s", ErrInvalidPricesZoneID, value)
+	if !regexp.MustCompile(`[A-Z]{3}`).MatchString(value) {
+		return PricesZoneID{}, err
 	}
 
 	return PricesZoneID{

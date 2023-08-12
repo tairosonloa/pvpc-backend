@@ -2,22 +2,21 @@ package listing
 
 import (
 	"context"
-	"errors"
 	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/errors"
 	"go-pvpc/internal/platform/storage/storagemocks"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_ListingService(t *testing.T) {
 
 	t.Run("fails with a repository error", func(t *testing.T) {
 		repositoryMock := new(storagemocks.PricesZonesRepository)
-		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.New("mock error"))
+		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.NewDomainError(errors.PersistenceError, "mock-error"))
 
 		listingService := NewListingService(repositoryMock)
 		res, err := listingService.ListPricesZones(context.Background())

@@ -3,12 +3,12 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/huandu/go-sqlbuilder"
 
 	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/errors"
 )
 
 // PricesRepository is a PostgreSQL pvpc.PricesRepository implementation.
@@ -55,7 +55,7 @@ func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error
 
 	_, err := r.db.ExecContext(ctxTimeout, query, args...)
 	if err != nil {
-		return fmt.Errorf("error trying to persist prices into database: %v", err)
+		return errors.WrapIntoDomainError(err, errors.PersistenceError, "error trying to persist Prices into database")
 	}
 
 	return nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	pvpc "go-pvpc/internal"
+	dErrors "go-pvpc/internal/errors"
 	"testing"
 	"time"
 
@@ -150,11 +151,10 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 		result, err := repo.GetByID(context.Background(), zoneID)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
 		assert.Error(t, err)
-		assert.Equal(t, pvpc.ErrPricesZoneNotFound, err)
+		assert.Equal(t, dErrors.PricesZoneNotFound, dErrors.Code(err))
 		assert.Equal(t, pvpc.PricesZone{}, result)
-
+		assert.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }
 
@@ -219,10 +219,9 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 
 		result, err := repo.GetByExternalID(context.Background(), externalID)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
 		assert.Error(t, err)
-		assert.Equal(t, pvpc.ErrPricesZoneNotFound, err)
+		assert.Equal(t, dErrors.PricesZoneNotFound, dErrors.Code(err))
 		assert.Equal(t, pvpc.PricesZone{}, result)
-
+		assert.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }

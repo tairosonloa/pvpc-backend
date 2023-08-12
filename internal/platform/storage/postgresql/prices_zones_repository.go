@@ -3,10 +3,10 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/errors"
 
 	"github.com/huandu/go-sqlbuilder"
 )
@@ -35,7 +35,7 @@ func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, 
 
 	rows, err := r.db.QueryContext(ctxTimeout, query)
 	if err != nil {
-		return nil, fmt.Errorf("error querying prices zone from database: %v", err)
+		return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error querying PricesZone from database")
 	}
 	defer rows.Close()
 
@@ -44,12 +44,12 @@ func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, 
 		var dbZone zoneSchema
 		err := rows.Scan(zoneStruct.Addr(&dbZone)...)
 		if err != nil {
-			return nil, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
 		}
 
 		zone, err := mapDbPricesZoneToDomain(dbZone)
 		if err != nil {
-			return nil, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
+			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
 		}
 		zones = append(zones, zone)
 	}
@@ -73,14 +73,14 @@ func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneI
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return pvpc.PricesZone{}, pvpc.ErrPricesZoneNotFound
+			return pvpc.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with ID %s not found", id.String())
 		}
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
 	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
+		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
 	}
 
 	return zone, nil
@@ -100,14 +100,14 @@ func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID 
 	err := row.Scan(zoneStruct.Addr(&dbZone)...)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return pvpc.PricesZone{}, pvpc.ErrPricesZoneNotFound
+			return pvpc.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with externalID %s not found", externalID)
 		}
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from database to schema: %v", err)
+		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
 	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, fmt.Errorf("error mapping prices zone from schema to domain: %v", err)
+		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
 	}
 
 	return zone, nil

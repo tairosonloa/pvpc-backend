@@ -3,7 +3,7 @@ package zones
 import (
 	pvpc "go-pvpc/internal"
 	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/error"
+	"go-pvpc/internal/platform/server/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +25,8 @@ func ListZonesHandler(listingService listing.ListingService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		zones, err := listingService.ListPricesZones(ctx)
 		if err != nil {
-			ctx.JSON(error.DeduceStatusCode(err), error.NewAPIErrorResponse(err))
+			statusCode, response := common.NewAPIErrorResponse(err)
+			ctx.JSON(statusCode, response)
 			return
 		}
 
