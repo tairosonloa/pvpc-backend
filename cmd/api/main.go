@@ -6,11 +6,11 @@ import (
 	"log"
 	"time"
 
-	"go-pvpc/internal/platform/server"
-
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+
+	"go-pvpc/internal/platform/server"
 )
 
 type config struct {

@@ -2,9 +2,9 @@ package pvpc
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"regexp"
+
+	"go-pvpc/internal/errors"
 )
 
 // PricesDto is the DTO structure that represents the PVPC prices for a day.
@@ -40,19 +40,16 @@ type PricesID struct {
 	value string
 }
 
-var ErrInvalidPricesID = errors.New("invalid Prices ID. It must be in the shape of ZONE_ID-YYYY-MM-DD")
-
 // NewPricesID instantiate the VO for PricesID
 func NewPricesID(value string) (PricesID, error) {
-	if len(value) != 14 { // ZONE_ID-YYYY-MM-DD, where ZONE_ID is the PricesZoneID (3 uppercase letters)
-		return PricesID{}, fmt.Errorf("%w: %s", ErrInvalidPricesID, value)
+	err := errors.NewDomainError(errors.InvalidPricesID, "invalid Prices ID: %s. It must be in the shape of ZONE_ID-YYYY-MM-DD", value)
+
+	if len(value) != 14 {
+		return PricesID{}, err
 	}
 
-	re := regexp.MustCompile(`[A-Z]{3}-\d{4}-\d{2}-\d{2}`)
-	matches := re.MatchString(value)
-
-	if !matches {
-		return PricesID{}, fmt.Errorf("%w: %s", ErrInvalidPricesID, value)
+	if !regexp.MustCompile(`[A-Z]{3}-\d{4}-\d{2}-\d{2}`).MatchString(value) {
+		return PricesID{}, err
 	}
 
 	return PricesID{
@@ -67,6 +64,7 @@ func (id PricesID) String() string {
 
 // PricesRepository defines the expected behavior from a prices storage.
 type PricesRepository interface {
+	// Save persists the given prices.
 	Save(ctx context.Context, prices []Prices) error
 }
 

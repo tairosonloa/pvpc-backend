@@ -10,7 +10,10 @@ import (
 	"syscall"
 	"time"
 
+	"go-pvpc/internal/listing"
 	"go-pvpc/internal/platform/server/handler/health"
+	"go-pvpc/internal/platform/server/handler/zones"
+	"go-pvpc/internal/platform/storage/postgresql"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,11 +23,16 @@ type Server struct {
 	engine          *gin.Engine
 	shutdownTimeout time.Duration
 	storage         storage
+	services        services
 }
 
 type storage struct {
 	db        *sql.DB
 	dbTimeout time.Duration
+}
+
+type services struct {
+	listingService listing.ListingService
 }
 
 func New(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) Server {
@@ -41,13 +49,26 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 		},
 	}
 
+	srv.registerServices()
 	srv.registerRoutes()
 
 	return srv
 }
 
+func (s *Server) registerServices() {
+	// Repositories
+	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
+
+	// Services
+	s.services.listingService = listing.NewListingService(pricesZonesRepository)
+}
+
 func (s *Server) registerRoutes() {
+	// Health check
 	s.engine.GET("/health", health.HealthCheckHandler(s.storage.db, s.storage.dbTimeout))
+
+	// Zones
+	s.engine.GET("/zones", zones.ListZonesHandler(s.services.listingService))
 }
 
 func (s *Server) Run() {

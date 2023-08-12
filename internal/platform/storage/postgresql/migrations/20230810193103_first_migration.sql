@@ -3,8 +3,8 @@
 CREATE TABLE IF NOT EXISTS zones
 (
     id           CHAR(3)  PRIMARY KEY, -- THREE UPPERCASE LETTERS
-    external_id  TEXT      NOT NULL,
-    name         TEXT      NOT NULL
+    external_id  TEXT     UNIQUE NOT NULL,
+    name         TEXT     NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS prices

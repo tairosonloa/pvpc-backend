@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+
+      - name: Install dependencies
+        run: go mod download
+
+  Build:
+    runs-on: ubuntu-latest
+    needs: Prepare
+    steps:
+      - name: Fetch code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+
+      - name: Build
+        run: go build -v ./...
+
+  Lint:
+    runs-on: ubuntu-latest
+    needs: Prepare
+    steps:
+      - name: Fetch code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+
+      - name: Check formatting
+        run: ./scripts/format.sh
+
+      - name: Check warnings
+        run: ./scripts/vet.sh
+
+      - name: Static code analysis
+        run: ./scripts/staticcheck.sh
+
+  Test:
+    runs-on: ubuntu-latest
+    needs: Prepare
+    steps:
+      - name: Fetch code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+    
+      - name: Test with coverage
+        run: ./scripts/test.sh
