@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/db/postgresql"
 	"go-pvpc/internal/platform/server/handler/health"
 	"go-pvpc/internal/platform/server/handler/zones"
+	"go-pvpc/internal/platform/storage/postgresql"
 
 	"github.com/gin-gonic/gin"
 )

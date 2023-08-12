@@ -22,7 +22,7 @@ type config struct {
 
 var (
 	flags = flag.NewFlagSet("migrate", flag.ExitOnError)
-	dir   = flags.String("dir", "internal/platform/db/postgresql/migrations", "directory with migration files")
+	dir   = flags.String("dir", "internal/platform/storage/postgresql/migrations", "directory with migration files")
 )
 
 func main() {
