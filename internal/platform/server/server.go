@@ -57,10 +57,10 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 
 func (s *Server) registerServices() {
 	// Repositories
-	pricesZoneRepository := postgresql.NewPricesZoneRepository(s.storage.db, s.storage.dbTimeout)
+	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
-	s.services.listingService = listing.NewListingService(pricesZoneRepository)
+	s.services.listingService = listing.NewListingService(pricesZonesRepository)
 }
 
 func (s *Server) registerRoutes() {

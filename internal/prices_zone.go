@@ -52,8 +52,8 @@ func (id PricesZoneID) String() string {
 	return id.value
 }
 
-// PricesZoneRepository defines the expected behavior from a prices storage.
-type PricesZoneRepository interface {
+// PricesZonesRepository defines the expected behavior from a prices storage.
+type PricesZonesRepository interface {
 	// GetAll returns all the prices zones.
 	GetAll(ctx context.Context) ([]PricesZone, error)
 	// GetByID returns the prices zone with the given ID.

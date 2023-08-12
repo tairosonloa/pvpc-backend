@@ -21,7 +21,7 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones").
 			WillReturnError(errors.New("mock-error"))
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		_, err = repo.GetAll(context.Background())
 
@@ -43,7 +43,7 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones").
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetAll(context.Background())
 		require.NoError(t, err)
@@ -70,7 +70,7 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones").
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetAll(context.Background())
 		require.NoError(t, err)
@@ -95,7 +95,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 			WithArgs(zoneIDString).
 			WillReturnError(errors.New("mock-error"))
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		_, err = repo.GetByID(context.Background(), zoneID)
 
@@ -118,7 +118,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 			WithArgs(id).
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetByID(context.Background(), zoneID)
 		require.NoError(t, err)
@@ -146,7 +146,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 			WithArgs(id).
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetByID(context.Background(), zoneID)
 
@@ -170,7 +170,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 			WithArgs(zoneExternalID).
 			WillReturnError(errors.New("mock-error"))
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		_, err = repo.GetByExternalID(context.Background(), zoneExternalID)
 
@@ -191,7 +191,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 			WithArgs(externalID).
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetByExternalID(context.Background(), externalID)
 		require.NoError(t, err)
@@ -215,7 +215,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 			WithArgs(externalID).
 			WillReturnRows(rows)
 
-		repo := NewPricesZoneRepository(db, 1*time.Millisecond)
+		repo := NewPricesZonesRepository(db, 1*time.Millisecond)
 
 		result, err := repo.GetByExternalID(context.Background(), externalID)
 

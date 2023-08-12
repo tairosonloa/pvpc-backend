@@ -16,7 +16,7 @@ import (
 
 func Test_ListZonesHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	repositoryMock := new(storagemocks.PricesZoneRepository)
+	repositoryMock := new(storagemocks.PricesZonesRepository)
 	listingService := listing.NewListingService(repositoryMock)
 
 	r := gin.New()

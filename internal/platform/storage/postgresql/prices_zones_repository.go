@@ -11,21 +11,21 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 )
 
-// PricesZoneRepository is a PostgreSQL pvpc.PricesZoneRepository implementation.
-type PricesZoneRepository struct {
+// PricesZonesRepository is a PostgreSQL pvpc.PricesZonesRepository implementation.
+type PricesZonesRepository struct {
 	db        *sql.DB
 	dbTimeout time.Duration
 }
 
-// NewPricesZoneRepository initializes a PostgreSQL-based implementation of pvpc.PricesZoneRepository.
-func NewPricesZoneRepository(db *sql.DB, dbTimeout time.Duration) *PricesZoneRepository {
-	return &PricesZoneRepository{
+// NewPricesZonesRepository initializes a PostgreSQL-based implementation of pvpc.PricesZonesRepository.
+func NewPricesZonesRepository(db *sql.DB, dbTimeout time.Duration) *PricesZonesRepository {
+	return &PricesZonesRepository{
 		db:        db,
 		dbTimeout: dbTimeout,
 	}
 }
 
-func (r *PricesZoneRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, error) {
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	query, _ := zoneStruct.SelectFrom(zonesTableName).Build()
@@ -57,7 +57,7 @@ func (r *PricesZoneRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, e
 	return zones, nil
 }
 
-func (r *PricesZoneRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID) (pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID) (pvpc.PricesZone, error) {
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	qb := zoneStruct.SelectFrom(zonesTableName)
@@ -85,7 +85,7 @@ func (r *PricesZoneRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID
 
 	return zone, nil
 }
-func (r *PricesZoneRepository) GetByExternalID(ctx context.Context, externalID string) (pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID string) (pvpc.PricesZone, error) {
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	qb := zoneStruct.SelectFrom(zonesTableName)
