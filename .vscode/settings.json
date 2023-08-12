@@ -2,8 +2,11 @@
   "cSpell.words": [
     "Datetime",
     "gonic",
+    "keeptree",
+    "outpkg",
     "Pvpc",
     "sqlmock",
+    "storagemocks",
     "stretchr"
   ]
 }
