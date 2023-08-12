@@ -1,4 +1,9 @@
 {
+  "go.formatTool": "default", // Use language server gopls
+  "gopls": {
+    "formatting.local": "go-pvpc", // go-pvpc are local packages
+    "ui.semanticTokens": true
+  },
   "cSpell.words": [
     "Datetime",
     "gonic",

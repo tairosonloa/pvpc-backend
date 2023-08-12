@@ -1,8 +1,9 @@
 package common
 
 import (
-	"go-pvpc/internal/errors"
 	"net/http"
+
+	"go-pvpc/internal/errors"
 )
 
 type APIErrorResponse struct {

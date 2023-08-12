@@ -3,13 +3,14 @@ package postgresql
 import (
 	"context"
 	"errors"
-	pvpc "go-pvpc/internal"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	pvpc "go-pvpc/internal"
 )
 
 func Test_PricesRepository_Save(t *testing.T) {

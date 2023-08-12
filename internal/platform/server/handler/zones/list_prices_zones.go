@@ -1,12 +1,13 @@
 package zones
 
 import (
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/listing"
+	"go-pvpc/internal/platform/server/common"
 )
 
 type response struct {

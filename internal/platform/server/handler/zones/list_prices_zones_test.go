@@ -2,9 +2,6 @@ package zones
 
 import (
 	"errors"
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/storage/storagemocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,6 +10,10 @@ import (
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/listing"
+	"go-pvpc/internal/platform/storage/storagemocks"
 )
 
 func Test_ListZonesHandler_Success(t *testing.T) {

@@ -2,14 +2,15 @@ package listing
 
 import (
 	"context"
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/errors"
-	"go-pvpc/internal/platform/storage/storagemocks"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	pvpc "go-pvpc/internal"
+	"go-pvpc/internal/errors"
+	"go-pvpc/internal/platform/storage/storagemocks"
 )
 
 func Test_ListingService(t *testing.T) {
