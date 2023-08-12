@@ -35,7 +35,7 @@ func (ps priceSchemaSlice) Value() (driver.Value, error) {
 func (ps *priceSchemaSlice) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
-		return errors.New("type assertion to []byte failed")
+		return errors.New("sql.Scanner Scan() custom implementation: type assertion to []byte failed")
 	}
 
 	return json.Unmarshal(b, &ps)
