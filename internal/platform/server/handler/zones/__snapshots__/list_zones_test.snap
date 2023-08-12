@@ -1,0 +1,4 @@
+
+[Test_ListZonesHandler/list_available_zones_and_returns_200 - 1]
+{"zones":[{"id":"ABC","external_id":"1234","name":"zone1"},{"id":"DEF","external_id":"5678","name":"zone2"}],"total":2}
+---
