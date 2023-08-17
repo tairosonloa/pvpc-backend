@@ -1,10 +1,12 @@
 with-expecter: true
 quiet: false
-case: underscore
 packages:
-    go-pvpc:
+    go-pvpc/internal:
         config:
+            mockname: "{{.InterfaceName}}"
+            filename: "{{.InterfaceNameSnake}}.go"
             outpkg: storagemocks
-            output: internal/platform/storage/storagemocks
+            dir: internal/platform/storage/storagemocks
         interfaces:
+            PricesRepository:
             PricesZonesRepository:
