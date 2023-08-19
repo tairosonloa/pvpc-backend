@@ -37,7 +37,7 @@ func main() {
 
 	command := args[0]
 
-	cfg := load_config()
+	cfg := loadConfig()
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName)
 	db, err := goose.OpenDBWithDriver("pgx", connStr)
 	if err != nil {
@@ -55,7 +55,7 @@ func main() {
 	}
 }
 
-func load_config() config {
+func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)

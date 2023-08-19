@@ -32,10 +32,10 @@ type config struct {
 func main() {
 	var err error
 
-	configure_logger()
-	cfg := load_config()
+	configureLogger()
+	cfg := loadConfig()
 
-	db, err := database_connection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
+	db, err := databaseConnection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
@@ -45,7 +45,7 @@ func main() {
 	srv.Run()
 }
 
-func configure_logger() {
+func configureLogger() {
 	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
 		Prefix:          "pvpc",
 		ReportTimestamp: true,
@@ -54,7 +54,7 @@ func configure_logger() {
 	}))
 }
 
-func load_config() config {
+func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file: %v", err)
@@ -65,7 +65,7 @@ func load_config() config {
 	return cfg
 }
 
-func database_connection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
+func databaseConnection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
 	return sql.Open("pgx", connStr)
 }
