@@ -5,9 +5,14 @@
     "ui.semanticTokens": true
   },
   "cSpell.words": [
+    "charmbracelet",
     "Datetime",
+    "envconfig",
+    "godotenv",
     "gonic",
+    "Infof",
     "keeptree",
+    "Middlewares",
     "outpkg",
     "Pvpc",
     "sqlmock",

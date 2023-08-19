@@ -19,7 +19,8 @@ type domainError struct {
 }
 
 func (e domainError) Error() string {
-	return fmt.Sprintf("%s: %s", e.errorCode, e.error.Error())
+	// return fmt.Sprintf("%s: %s", e.errorCode, e.error.Error())
+	return e.error.Error()
 }
 
 func Code(err error) ErrorCode {

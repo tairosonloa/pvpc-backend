@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"os"
 	"time"
 
+	"github.com/charmbracelet/log"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -30,11 +31,13 @@ type config struct {
 
 func main() {
 	var err error
-	cfg := load_config()
 
-	db, err := database_connection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
+	configureLogger()
+	cfg := loadConfig()
+
+	db, err := databaseConnection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
 	if err != nil {
-		log.Fatal("Error connecting to database", err)
+		log.Fatalf("Error connecting to database: %v", err)
 	}
 	defer db.Close()
 
@@ -42,18 +45,27 @@ func main() {
 	srv.Run()
 }
 
-func load_config() config {
+func configureLogger() {
+	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
+		Prefix:          "pvpc",
+		ReportTimestamp: true,
+		TimeFunction:    log.NowUTC,
+		TimeFormat:      "2006/01/02T15:04:05Z",
+	}))
+}
+
+func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file: %v", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
-		log.Fatal("Error processing env config", err)
+		log.Fatal("Error processing env config: %v", err)
 	}
 	return cfg
 }
 
-func database_connection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
+func databaseConnection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
 	return sql.Open("pgx", connStr)
 }
