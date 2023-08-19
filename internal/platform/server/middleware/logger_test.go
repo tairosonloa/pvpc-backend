@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,14 +16,13 @@ import (
 
 func TestMiddleware(t *testing.T) {
 	// Setting up the output recorder
-	rescueStderr := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stderr = w
 
 	// Setting up the Gin server
 	gin.SetMode(gin.TestMode)
 	engine := gin.New()
 	engine.Use(Logger([]string{}))
+	log.Default().SetOutput(w)
 
 	// Setting up the HTTP recorder and the request
 	httpRecorder := httptest.NewRecorder()
@@ -35,7 +35,6 @@ func TestMiddleware(t *testing.T) {
 	// Getting the output recorded
 	require.NoError(t, w.Close())
 	got, _ := io.ReadAll(r)
-	os.Stderr = rescueStderr
 
 	fmt.Println("GOT:", string(got))
 
