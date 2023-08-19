@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/charmbracelet/log"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -41,27 +41,27 @@ func main() {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName)
 	db, err := goose.OpenDBWithDriver("pgx", connStr)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("Error opening DB: %v", err.Error())
 	}
 
 	defer func() {
 		if err := db.Close(); err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("Error closing DB: %v", err.Error())
 		}
 	}()
 
 	if err := goose.Run(command, db, *dir, args[1:]...); err != nil {
-		log.Fatalf("migrate %v: %v", command, err)
+		log.Fatalf("Migrate %v: %v", command, err)
 	}
 }
 
 func load_config() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
-		log.Fatal("Error processing env config", err)
+		log.Fatalf("Error processing env config: %v", err)
 	}
 	return cfg
 }

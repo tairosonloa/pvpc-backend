@@ -4,18 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/charmbracelet/log"
+	"github.com/gin-gonic/gin"
+
 	"go-pvpc/internal/listing"
 	"go-pvpc/internal/platform/server/handler/health"
 	"go-pvpc/internal/platform/server/handler/zones"
+	"go-pvpc/internal/platform/server/middleware"
 	"go-pvpc/internal/platform/storage/postgresql"
-
-	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
@@ -40,7 +41,7 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 		gin.SetMode(gin.ReleaseMode)
 	}
 	srv := Server{
-		engine:          gin.Default(),
+		engine:          gin.New(),
 		httpAddr:        fmt.Sprintf("%s:%d", host, port),
 		shutdownTimeout: shutdownTimeout,
 		storage: storage{
@@ -49,10 +50,16 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 		},
 	}
 
+	srv.registerMiddlewares()
 	srv.registerServices()
 	srv.registerRoutes()
 
 	return srv
+}
+
+func (s *Server) registerMiddlewares() {
+	s.engine.Use(gin.Recovery())
+	s.engine.Use(middleware.Logger([]string{"/health"}))
 }
 
 func (s *Server) registerServices() {
@@ -81,9 +88,9 @@ func (s *Server) Run() {
 	defer stop()
 
 	go func() {
-		log.Println("Server running on", s.httpAddr)
+		log.Infof("Server running on %s", s.httpAddr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("Unexpected server shutdown", err)
+			log.Fatalf("Unexpected server shutdown: %v", err)
 		}
 	}()
 
@@ -91,14 +98,14 @@ func (s *Server) Run() {
 
 	// Restore default behavior on the interrupt signal and notify user of shutdown.
 	stop()
-	fmt.Println("")
-	log.Println("Shutting down gracefully, press Ctrl+C again to force")
+	fmt.Println() // Blank line for readability, so ^C is on its own line.
+	log.Infof("Shutting down gracefully, press Ctrl+C again to force")
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown: ", err)
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
-	log.Println("Server exiting")
+	log.Info("Server exiting")
 }

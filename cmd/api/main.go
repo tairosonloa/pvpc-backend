@@ -3,9 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
+	"github.com/charmbracelet/log"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -34,7 +34,7 @@ func main() {
 
 	db, err := database_connection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
 	if err != nil {
-		log.Fatal("Error connecting to database", err)
+		log.Fatalf("Error connecting to database: %v", err)
 	}
 	defer db.Close()
 
@@ -45,10 +45,10 @@ func main() {
 func load_config() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file: %v", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
-		log.Fatal("Error processing env config", err)
+		log.Fatal("Error processing env config: %v", err)
 	}
 	return cfg
 }
