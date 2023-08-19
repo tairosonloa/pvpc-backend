@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -30,6 +31,8 @@ type config struct {
 
 func main() {
 	var err error
+
+	configure_logger()
 	cfg := load_config()
 
 	db, err := database_connection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
@@ -40,6 +43,15 @@ func main() {
 
 	srv := server.New(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout)
 	srv.Run()
+}
+
+func configure_logger() {
+	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
+		Prefix:          "http",
+		ReportTimestamp: true,
+		TimeFunction:    log.NowUTC,
+		TimeFormat:      "2006/01/02T15:04:05Z",
+	}))
 }
 
 func load_config() config {

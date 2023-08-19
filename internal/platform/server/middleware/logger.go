@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"os"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -12,13 +11,6 @@ import (
 // of the incoming request and the consequent response.
 // It is intended to be used as a middleware.
 func Logger(skipPaths []string) gin.HandlerFunc {
-	logger := log.NewWithOptions(os.Stderr, log.Options{
-		Prefix:          "http",
-		ReportTimestamp: true,
-		TimeFunction:    log.NowUTC,
-		TimeFormat:      "2006/01/02T15:04:05Z",
-	})
-
 	var skip map[string]struct{}
 
 	if length := len(skipPaths); length > 0 {
@@ -50,7 +42,7 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 			}
 
 			if errorMessage != "" {
-				logger.Error("Received request",
+				log.Error("Received request",
 					"statusCode", statusCode,
 					"latency", latency,
 					"clientIP", clientIP,
@@ -59,7 +51,7 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 					"error", errorMessage,
 				)
 			} else {
-				logger.Info("Received request",
+				log.Info("Received request",
 					"statusCode", statusCode,
 					"latency", latency,
 					"clientIP", clientIP,
