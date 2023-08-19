@@ -47,7 +47,7 @@ func main() {
 
 func configure_logger() {
 	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
-		Prefix:          "http",
+		Prefix:          "pvpc",
 		ReportTimestamp: true,
 		TimeFunction:    log.NowUTC,
 		TimeFormat:      "2006/01/02T15:04:05Z",

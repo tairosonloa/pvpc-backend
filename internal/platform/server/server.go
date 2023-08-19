@@ -88,7 +88,7 @@ func (s *Server) Run() {
 	defer stop()
 
 	go func() {
-		log.Infof("Server running on %s", s.httpAddr)
+		log.Info("Server running", "addr", s.httpAddr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Unexpected server shutdown: %v", err)
 		}
