@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
 	pvpc "go-pvpc/internal"
@@ -27,6 +28,7 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 
 // Save implements the pvpc.PricesRepository interface.
 func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error {
+	log.Debug("Saving Prices into database")
 	pricesStruct := sqlbuilder.NewStruct(new(pricesSchema))
 
 	dbPrices := make([]interface{}, len(prices))

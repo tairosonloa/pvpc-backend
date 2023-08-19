@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/charmbracelet/log"
+	"github.com/huandu/go-sqlbuilder"
+
 	pvpc "go-pvpc/internal"
 	"go-pvpc/internal/errors"
-
-	"github.com/huandu/go-sqlbuilder"
 )
 
 // PricesZonesRepository is a PostgreSQL pvpc.PricesZonesRepository implementation.
@@ -26,6 +27,7 @@ func NewPricesZonesRepository(db *sql.DB, dbTimeout time.Duration) *PricesZonesR
 }
 
 func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, error) {
+	log.Debug("Getting all PricesZones from database")
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	query, _ := zoneStruct.SelectFrom(zonesTableName).Build()
@@ -58,6 +60,7 @@ func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, 
 }
 
 func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID) (pvpc.PricesZone, error) {
+	log.Debug("Getting PricesZone from database by ID", "id", id.String())
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	qb := zoneStruct.SelectFrom(zonesTableName)
@@ -86,6 +89,7 @@ func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneI
 	return zone, nil
 }
 func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID string) (pvpc.PricesZone, error) {
+	log.Debug("Getting PricesZone from database by externalID", "externalID", externalID)
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
 	qb := zoneStruct.SelectFrom(zonesTableName)
