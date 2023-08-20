@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"pvpc-backend/internal/domain"
-	"pvpc-backend/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 	"pvpc-backend/internal/mocks"
 )
 

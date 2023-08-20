@@ -9,7 +9,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 
 	"pvpc-backend/internal/domain"
-	"pvpc-backend/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 )
 
 const (

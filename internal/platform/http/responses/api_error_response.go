@@ -3,7 +3,7 @@ package responses
 import (
 	"net/http"
 
-	"pvpc-backend/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 )
 
 type APIErrorResponse struct {

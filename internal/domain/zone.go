@@ -4,7 +4,7 @@ import (
 	"context"
 	"regexp"
 
-	"pvpc-backend/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 )
 
 // ZoneDto is the DTO structure that represents a PVPC prices zone.

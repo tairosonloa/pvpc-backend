@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"pvpc-backend/internal/domain"
-	dErrors "pvpc-backend/internal/errors"
+	dErrors "pvpc-backend/internal/domain/errors"
 )
 
 func Test_ZonesRepository_GetAll(t *testing.T) {
