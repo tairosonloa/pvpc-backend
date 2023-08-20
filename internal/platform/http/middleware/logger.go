@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
-	"pvpc-backend/internal/platform/server/common"
+	"pvpc-backend/internal/platform/http/common"
 )
 
 type bodyLogWriter struct {

@@ -7,7 +7,7 @@ import (
 
 	pvpc "pvpc-backend/internal"
 	"pvpc-backend/internal/listing"
-	"pvpc-backend/internal/platform/server/common"
+	"pvpc-backend/internal/platform/http/common"
 )
 
 type response struct {

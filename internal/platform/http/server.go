@@ -13,14 +13,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"pvpc-backend/internal/listing"
-	"pvpc-backend/internal/platform/server/handler/health"
-	"pvpc-backend/internal/platform/server/handler/zones"
-	"pvpc-backend/internal/platform/server/middleware"
+	"pvpc-backend/internal/platform/http/handler/health"
+	"pvpc-backend/internal/platform/http/handler/zones"
+	"pvpc-backend/internal/platform/http/middleware"
 	"pvpc-backend/internal/platform/storage/postgresql"
 )
 
-type Server struct {
-	httpAddr        string
+type HttpServer struct {
+	address         string
 	engine          *gin.Engine
 	shutdownTimeout time.Duration
 	storage         storage
@@ -36,13 +36,13 @@ type services struct {
 	listingService listing.ListingService
 }
 
-func New(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) Server {
+func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) HttpServer {
 	if env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	srv := Server{
+	srv := HttpServer{
 		engine:          gin.New(),
-		httpAddr:        fmt.Sprintf("%s:%d", host, port),
+		address:         fmt.Sprintf("%s:%d", host, port),
 		shutdownTimeout: shutdownTimeout,
 		storage: storage{
 			db:        db,
@@ -57,12 +57,12 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 	return srv
 }
 
-func (s *Server) registerMiddlewares() {
+func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(gin.Recovery())
 	s.engine.Use(middleware.Logger([]string{"/health"}))
 }
 
-func (s *Server) registerServices() {
+func (s *HttpServer) registerServices() {
 	// Repositories
 	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
 
@@ -70,7 +70,7 @@ func (s *Server) registerServices() {
 	s.services.listingService = listing.NewListingService(pricesZonesRepository)
 }
 
-func (s *Server) registerRoutes() {
+func (s *HttpServer) registerRoutes() {
 	// Health check
 	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
 
@@ -78,9 +78,9 @@ func (s *Server) registerRoutes() {
 	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.listingService))
 }
 
-func (s *Server) Run() {
+func (s *HttpServer) Run() {
 	srv := &http.Server{
-		Addr:    s.httpAddr,
+		Addr:    s.address,
 		Handler: s.engine,
 	}
 
@@ -88,7 +88,7 @@ func (s *Server) Run() {
 	defer stop()
 
 	go func() {
-		log.Info("Server running", "addr", s.httpAddr)
+		log.Info("Server running", "address", s.address)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Unexpected server shutdown: %v", err)
 		}

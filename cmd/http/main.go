@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
-	"pvpc-backend/internal/platform/server"
+	server "pvpc-backend/internal/platform/http"
 )
 
 type config struct {
@@ -41,7 +41,7 @@ func main() {
 	}
 	defer db.Close()
 
-	srv := server.New(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout)
+	srv := server.NewHttpServer(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout)
 	srv.Run()
 }
 
