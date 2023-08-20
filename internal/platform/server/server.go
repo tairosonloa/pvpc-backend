@@ -72,10 +72,10 @@ func (s *Server) registerServices() {
 
 func (s *Server) registerRoutes() {
 	// Health check
-	s.engine.GET("/health", health.HealthCheckHandler(s.storage.db, s.storage.dbTimeout))
+	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
 
 	// Zones
-	s.engine.GET("/zones", zones.ListZonesHandler(s.services.listingService))
+	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.listingService))
 }
 
 func (s *Server) Run() {

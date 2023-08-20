@@ -13,17 +13,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_HealthCheckHandler_UP(t *testing.T) {
+func Test_HealthCheckHandlerV1_UP(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
 	t.Run("when db is up it returns 200", func(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 		require.NoError(t, err)
-		r.GET("/health", HealthCheckHandler(db, 1*time.Millisecond))
+		r.GET("/v1/health", HealthCheckHandlerV1(db, 1*time.Millisecond))
 
 		sqlMock.ExpectPing()
-		req, err := http.NewRequest(http.MethodGet, "/health", nil)
+		req, err := http.NewRequest(http.MethodGet, "/v1/health", nil)
 		require.NoError(t, err)
 
 		rec := httptest.NewRecorder()
@@ -37,17 +37,17 @@ func Test_HealthCheckHandler_UP(t *testing.T) {
 	})
 }
 
-func Test_HealthCheckHandler_DOWN(t *testing.T) {
+func Test_HealthCheckHandlerV1_DOWN(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
 	t.Run("when db is down it returns 503", func(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 		require.NoError(t, err)
-		r.GET("/health", HealthCheckHandler(db, 1*time.Millisecond))
+		r.GET("/v1/health", HealthCheckHandlerV1(db, 1*time.Millisecond))
 
 		sqlMock.ExpectPing().WillReturnError(errors.New("mock-error"))
-		req, err := http.NewRequest(http.MethodGet, "/health", nil)
+		req, err := http.NewRequest(http.MethodGet, "/v1/health", nil)
 		require.NoError(t, err)
 
 		rec := httptest.NewRecorder()

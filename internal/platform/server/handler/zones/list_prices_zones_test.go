@@ -16,13 +16,13 @@ import (
 	"pvpc-backend/internal/platform/storage/storagemocks"
 )
 
-func Test_ListZonesHandler_Success(t *testing.T) {
+func Test_ListZonesHandlerV1_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
 	listingService := listing.NewListingService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/zones", ListZonesHandler(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
 
 	zone1, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{
 		ID:         "ABC",
@@ -43,7 +43,7 @@ func Test_ListZonesHandler_Success(t *testing.T) {
 		mock.Anything,
 	).Return([]pvpc.PricesZone{zone1, zone2}, nil)
 
-	req, err := http.NewRequest(http.MethodGet, "/zones", nil)
+	req, err := http.NewRequest(http.MethodGet, "/v1/zones", nil)
 	require.NoError(t, err)
 
 	rec := httptest.NewRecorder()
@@ -58,20 +58,20 @@ func Test_ListZonesHandler_Success(t *testing.T) {
 
 }
 
-func Test_ListZonesHandler_Empty(t *testing.T) {
+func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
 	listingService := listing.NewListingService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/zones", ListZonesHandler(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
 
 	repositoryMock.On(
 		"GetAll",
 		mock.Anything,
 	).Return([]pvpc.PricesZone{}, nil)
 
-	req, err := http.NewRequest(http.MethodGet, "/zones", nil)
+	req, err := http.NewRequest(http.MethodGet, "/v1/zones", nil)
 	require.NoError(t, err)
 
 	rec := httptest.NewRecorder()
@@ -84,20 +84,20 @@ func Test_ListZonesHandler_Empty(t *testing.T) {
 	snaps.MatchSnapshot(t, rec.Body.String())
 }
 
-func Test_ListZonesHandler_Error(t *testing.T) {
+func Test_ListZonesHandlerV1_Error(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
 	listingService := listing.NewListingService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/zones", ListZonesHandler(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
 
 	repositoryMock.On(
 		"GetAll",
 		mock.Anything,
 	).Return(nil, errors.New("mock error"))
 
-	req, err := http.NewRequest(http.MethodGet, "/zones", nil)
+	req, err := http.NewRequest(http.MethodGet, "/v1/zones", nil)
 	require.NoError(t, err)
 
 	rec := httptest.NewRecorder()

@@ -21,8 +21,8 @@ type zonesResponse struct {
 	Name       string `json:"name"`
 }
 
-// ListZonesHandler returns a gin.HandlerFunc to list prices zones.
-func ListZonesHandler(listingService listing.ListingService) gin.HandlerFunc {
+// ListZonesHandlerV1 returns a gin.HandlerFunc to list prices zones.
+func ListZonesHandlerV1(listingService listing.ListingService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		zones, err := listingService.ListPricesZones(ctx)
 		if err != nil {
