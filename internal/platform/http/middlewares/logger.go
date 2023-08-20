@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
-	"pvpc-backend/internal/platform/http/common"
+	"pvpc-backend/internal/platform/http/responses"
 )
 
 type bodyLogWriter struct {
@@ -63,7 +63,7 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 			}
 
 			if statusCode >= http.StatusBadRequest {
-				response := common.APIErrorResponse{}
+				response := responses.APIErrorResponse{}
 				json.Unmarshal(blw.body.Bytes(), &response)
 
 				log.Error("Errored request",

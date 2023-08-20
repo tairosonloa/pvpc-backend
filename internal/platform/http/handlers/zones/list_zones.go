@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"pvpc-backend/internal/domain"
-	"pvpc-backend/internal/platform/http/common"
+	"pvpc-backend/internal/platform/http/responses"
 	"pvpc-backend/internal/services"
 )
 
@@ -26,7 +26,7 @@ func ListZonesHandlerV1(listingService services.ZonesService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		zones, err := listingService.ListZones(ctx)
 		if err != nil {
-			statusCode, response := common.NewAPIErrorResponse(err)
+			statusCode, response := responses.NewAPIErrorResponse(err)
 			ctx.JSON(statusCode, response)
 			return
 		}
