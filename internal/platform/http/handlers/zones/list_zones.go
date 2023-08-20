@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/common"
+	"pvpc-backend/internal/domain"
+	"pvpc-backend/internal/platform/http/responses"
+	"pvpc-backend/internal/services"
 )
 
 type response struct {
@@ -21,12 +21,12 @@ type zonesResponse struct {
 	Name       string `json:"name"`
 }
 
-// ListZonesHandler returns a gin.HandlerFunc to list prices zones.
-func ListZonesHandler(listingService listing.ListingService) gin.HandlerFunc {
+// ListZonesHandlerV1 returns a gin.HandlerFunc to list prices zones.
+func ListZonesHandlerV1(listingService services.ZonesService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		zones, err := listingService.ListPricesZones(ctx)
+		zones, err := listingService.ListZones(ctx)
 		if err != nil {
-			statusCode, response := common.NewAPIErrorResponse(err)
+			statusCode, response := responses.NewAPIErrorResponse(err)
 			ctx.JSON(statusCode, response)
 			return
 		}
@@ -36,7 +36,7 @@ func ListZonesHandler(listingService listing.ListingService) gin.HandlerFunc {
 	}
 }
 
-func mapZonesResponse(zones []pvpc.PricesZone) response {
+func mapZonesResponse(zones []domain.Zone) response {
 	response := response{
 		Zones: make([]zonesResponse, len(zones)),
 		Total: len(zones),

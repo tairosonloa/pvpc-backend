@@ -6,7 +6,7 @@
 set -e -u
 
 go install golang.org/x/tools/cmd/goimports@latest
-output=`goimports -e -l -local go-pvpc ./`
+output=`goimports -e -l -local pvpc-backend ./`
 test "$output" = "" && echo "Everything OK" && exit 0
 echo "The following files have incorrect format:"
 echo "$output"

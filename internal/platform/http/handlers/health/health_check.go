@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// HealthCheckHandler returns a gin.HandlerFunc to perform health checks.
-func HealthCheckHandler(db *sql.DB, dbTimeout time.Duration) gin.HandlerFunc {
+// HealthCheckHandlerV1 returns a gin.HandlerFunc to perform health checks.
+func HealthCheckHandlerV1(db *sql.DB, dbTimeout time.Duration) gin.HandlerFunc {
 	checker := health.NewChecker(
 		health.WithCheck(health.Check{
 			Name:    "database",

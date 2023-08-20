@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"fmt"
@@ -19,6 +19,7 @@ func TestMiddleware(t *testing.T) {
 	r, w, _ := os.Pipe()
 
 	// Setting up the Gin server
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	engine := gin.New()
 	engine.Use(Logger([]string{}))

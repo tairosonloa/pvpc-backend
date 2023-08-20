@@ -1,41 +1,44 @@
-package pvpc
+package domain
 
 import (
 	"context"
 	"regexp"
 
-	"go-pvpc/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 )
 
-// PricesDto is the DTO structure that represents the PVPC prices for a day.
+// PricesDto is the main DTO struct used to build a Prices domain entity by calling domain.NewPrices().
 type PricesDto struct {
 	ID     string
 	Date   string
-	Zone   PricesZoneDto
-	Values []PriceDto
+	Zone   ZoneDto
+	Values []HourlyPriceDto
 }
 
-// PriceDto is the DTO structure that represents a PVPC price for a specific hour.
-type PriceDto struct {
+// HourlyPriceDto is the DTO struct that represents a PVPC price for a specific hour.
+// Used as a part of PricesDto and only to build a Prices domain entity.
+type HourlyPriceDto struct {
 	Datetime string
 	Value    float32
 }
 
-// Prices is the domain structure that represents PVPC prices for a day.
+// Prices is the domain entity that represents PVPC prices for a day.
 type Prices struct {
 	id     PricesID
 	date   string
-	zone   PricesZone
-	values []Price
+	zone   Zone
+	values []HourlyPrice
 }
 
-// Price is the domain structure that represents a PVPC price for a specific hour.
-type Price struct {
+// HourlyPrice is the domain entity that represents a PVPC price for a specific hour.
+// As prices for the same hour varies between zones, this entity has not meaning without a Zone,
+// which is linked to the parent Prices entity.
+type HourlyPrice struct {
 	datetime string
 	value    float32
 }
 
-// PricesID represents the prices unique identifier.
+// PricesID represents the Prices' unique identifier.
 type PricesID struct {
 	value string
 }
@@ -75,14 +78,14 @@ func NewPrices(pricesDto PricesDto) (Prices, error) {
 		return Prices{}, err
 	}
 
-	zone, err := NewPricesZone(pricesDto.Zone)
+	zone, err := NewZone(pricesDto.Zone)
 	if err != nil {
 		return Prices{}, err
 	}
 
-	pricesValues := make([]Price, len(pricesDto.Values))
+	pricesValues := make([]HourlyPrice, len(pricesDto.Values))
 	for i, v := range pricesDto.Values {
-		pricesValues[i] = Price{
+		pricesValues[i] = HourlyPrice{
 			datetime: v.Datetime,
 			value:    v.Value,
 		}
@@ -98,32 +101,32 @@ func NewPrices(pricesDto PricesDto) (Prices, error) {
 	return prices, nil
 }
 
-// ID returns the Prices unique identifier.
+// ID returns the Prices' unique identifier.
 func (c Prices) ID() PricesID {
 	return c.id
 }
 
-// Date returns the Prices date.
+// Date returns the Prices' date.
 func (c Prices) Date() string {
 	return c.date
 }
 
-// Zone returns the PricesZone for this Prices.
-func (c Prices) Zone() PricesZone {
+// Zone returns the Zone' for this Prices.
+func (c Prices) Zone() Zone {
 	return c.zone
 }
 
-// Values returns the Prices values.
-func (c Prices) Values() []Price {
+// Values returns the Prices' HourlyPrice values.
+func (c Prices) Values() []HourlyPrice {
 	return c.values
 }
 
-// Datetime returns the Price datetime.
-func (p Price) Datetime() string {
+// Datetime returns the HourlyPrice's datetime.
+func (p HourlyPrice) Datetime() string {
 	return p.datetime
 }
 
-// Value returns the Price value.
-func (p Price) Value() float32 {
+// Value returns the HourlyPrice's value.
+func (p HourlyPrice) Value() float32 {
 	return p.value
 }

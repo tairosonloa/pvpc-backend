@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"context"
@@ -12,15 +12,15 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/handler/health"
-	"go-pvpc/internal/platform/server/handler/zones"
-	"go-pvpc/internal/platform/server/middleware"
-	"go-pvpc/internal/platform/storage/postgresql"
+	"pvpc-backend/internal/platform/http/handlers/health"
+	"pvpc-backend/internal/platform/http/handlers/zones"
+	"pvpc-backend/internal/platform/http/middlewares"
+	"pvpc-backend/internal/platform/storage/postgresql"
+	servicespkg "pvpc-backend/internal/services"
 )
 
-type Server struct {
-	httpAddr        string
+type HttpServer struct {
+	address         string
 	engine          *gin.Engine
 	shutdownTimeout time.Duration
 	storage         storage
@@ -33,16 +33,16 @@ type storage struct {
 }
 
 type services struct {
-	listingService listing.ListingService
+	zonesService servicespkg.ZonesService
 }
 
-func New(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) Server {
+func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) HttpServer {
 	if env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	srv := Server{
+	srv := HttpServer{
 		engine:          gin.New(),
-		httpAddr:        fmt.Sprintf("%s:%d", host, port),
+		address:         fmt.Sprintf("%s:%d", host, port),
 		shutdownTimeout: shutdownTimeout,
 		storage: storage{
 			db:        db,
@@ -57,30 +57,30 @@ func New(host string, port uint, env string, shutdownTimeout time.Duration, db *
 	return srv
 }
 
-func (s *Server) registerMiddlewares() {
+func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(gin.Recovery())
-	s.engine.Use(middleware.Logger([]string{"/health"}))
+	s.engine.Use(middlewares.Logger([]string{"/health"}))
 }
 
-func (s *Server) registerServices() {
+func (s *HttpServer) registerServices() {
 	// Repositories
-	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
+	zonesRepository := postgresql.NewZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
-	s.services.listingService = listing.NewListingService(pricesZonesRepository)
+	s.services.zonesService = servicespkg.NewZonesService(zonesRepository)
 }
 
-func (s *Server) registerRoutes() {
+func (s *HttpServer) registerRoutes() {
 	// Health check
-	s.engine.GET("/health", health.HealthCheckHandler(s.storage.db, s.storage.dbTimeout))
+	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
 
 	// Zones
-	s.engine.GET("/zones", zones.ListZonesHandler(s.services.listingService))
+	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.zonesService))
 }
 
-func (s *Server) Run() {
+func (s *HttpServer) Run() {
 	srv := &http.Server{
-		Addr:    s.httpAddr,
+		Addr:    s.address,
 		Handler: s.engine,
 	}
 
@@ -88,7 +88,7 @@ func (s *Server) Run() {
 	defer stop()
 
 	go func() {
-		log.Info("Server running", "addr", s.httpAddr)
+		log.Info("Server running", "address", s.address)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Unexpected server shutdown: %v", err)
 		}

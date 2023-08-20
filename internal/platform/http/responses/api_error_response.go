@@ -1,9 +1,9 @@
-package common
+package responses
 
 import (
 	"net/http"
 
-	"go-pvpc/internal/errors"
+	"pvpc-backend/internal/domain/errors"
 )
 
 type APIErrorResponse struct {
@@ -35,9 +35,9 @@ func getErrorCode(err error) string {
 
 func mapErrorToStatusCode(err error) int {
 	switch errors.Code(err) {
-	case errors.InvalidPricesID, errors.InvalidPricesZoneID:
+	case errors.InvalidPricesID, errors.InvalidZoneID:
 		return http.StatusBadRequest
-	case errors.PricesZoneNotFound:
+	case errors.ZoneNotFound:
 		return http.StatusNotFound
 	case errors.PersistenceError:
 		return http.StatusInternalServerError

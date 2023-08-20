@@ -7,10 +7,10 @@ import (
 type ErrorCode string
 
 const (
-	InvalidPricesID     ErrorCode = "INVALID_PRICES_ID"
-	InvalidPricesZoneID ErrorCode = "INVALID_PRICES_ZONE_ID"
-	PersistenceError    ErrorCode = "PERSISTENCE_ERROR"
-	PricesZoneNotFound  ErrorCode = "PRICES_ZONE_NOT_FOUND"
+	InvalidPricesID  ErrorCode = "INVALID_PRICES_ID"
+	InvalidZoneID    ErrorCode = "INVALID_PRICES_ZONE_ID"
+	PersistenceError ErrorCode = "PERSISTENCE_ERROR"
+	ZoneNotFound     ErrorCode = "PRICES_ZONE_NOT_FOUND"
 )
 
 type domainError struct {
