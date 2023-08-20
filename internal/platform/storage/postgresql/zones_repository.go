@@ -12,6 +12,16 @@ import (
 	"pvpc-backend/internal/errors"
 )
 
+const (
+	zonesTableName = "zones"
+)
+
+type zoneSchema struct {
+	ID         string `db:"id"`
+	ExternalID string `db:"external_id"`
+	Name       string `db:"name"`
+}
+
 // ZonesRepository is a PostgreSQL domain.ZonesRepository implementation.
 type ZonesRepository struct {
 	db        *sql.DB
