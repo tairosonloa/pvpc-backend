@@ -64,10 +64,10 @@ func (s *HttpServer) registerMiddlewares() {
 
 func (s *HttpServer) registerServices() {
 	// Repositories
-	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
+	zonesRepository := postgresql.NewZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
-	s.services.zonesService = servicespkg.NewZonesService(pricesZonesRepository)
+	s.services.zonesService = servicespkg.NewZonesService(zonesRepository)
 }
 
 func (s *HttpServer) registerRoutes() {

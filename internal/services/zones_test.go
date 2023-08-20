@@ -16,7 +16,7 @@ import (
 func Test_ZonesService_ListZones(t *testing.T) {
 
 	t.Run("fails with a repository error", func(t *testing.T) {
-		repositoryMock := new(storagemocks.PricesZonesRepository)
+		repositoryMock := new(storagemocks.ZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.NewDomainError(errors.PersistenceError, "mock-error"))
 
 		listingService := NewZonesService(repositoryMock)
@@ -27,16 +27,16 @@ func Test_ZonesService_ListZones(t *testing.T) {
 		repositoryMock.AssertExpectations(t)
 	})
 
-	t.Run("succeeds and returns PricesZone's", func(t *testing.T) {
-		zone, err := domain.NewPricesZone(domain.PricesZoneDto{
+	t.Run("succeeds and returns Zone's", func(t *testing.T) {
+		zone, err := domain.NewZone(domain.ZoneDto{
 			ID:         "ZON",
 			ExternalID: "123",
 			Name:       "Zone 1",
 		})
 		require.NoError(t, err)
 
-		repositoryMock := new(storagemocks.PricesZonesRepository)
-		repositoryMock.On("GetAll", mock.Anything).Return([]domain.PricesZone{zone}, nil)
+		repositoryMock := new(storagemocks.ZonesRepository)
+		repositoryMock.On("GetAll", mock.Anything).Return([]domain.Zone{zone}, nil)
 
 		listingService := NewZonesService(repositoryMock)
 		res, err := listingService.ListZones(context.Background())

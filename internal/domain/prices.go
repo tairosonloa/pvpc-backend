@@ -11,7 +11,7 @@ import (
 type PricesDto struct {
 	ID     string
 	Date   string
-	Zone   PricesZoneDto
+	Zone   ZoneDto
 	Values []PriceDto
 }
 
@@ -25,7 +25,7 @@ type PriceDto struct {
 type Prices struct {
 	id     PricesID
 	date   string
-	zone   PricesZone
+	zone   Zone
 	values []Price
 }
 
@@ -75,7 +75,7 @@ func NewPrices(pricesDto PricesDto) (Prices, error) {
 		return Prices{}, err
 	}
 
-	zone, err := NewPricesZone(pricesDto.Zone)
+	zone, err := NewZone(pricesDto.Zone)
 	if err != nil {
 		return Prices{}, err
 	}
@@ -108,8 +108,8 @@ func (c Prices) Date() string {
 	return c.date
 }
 
-// Zone returns the PricesZone for this Prices.
-func (c Prices) Zone() PricesZone {
+// Zone returns the Zone for this Prices.
+func (c Prices) Zone() Zone {
 	return c.zone
 }
 

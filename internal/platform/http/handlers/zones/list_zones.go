@@ -36,7 +36,7 @@ func ListZonesHandlerV1(listingService services.ZonesService) gin.HandlerFunc {
 	}
 }
 
-func mapZonesResponse(zones []domain.PricesZone) response {
+func mapZonesResponse(zones []domain.Zone) response {
 	response := response{
 		Zones: make([]zonesResponse, len(zones)),
 		Total: len(zones),

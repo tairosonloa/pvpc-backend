@@ -24,7 +24,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 		prices1, err := domain.NewPrices(domain.PricesDto{
 			ID:     id1,
 			Date:   date1,
-			Zone:   domain.PricesZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
+			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
 			Values: []domain.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
 		})
 		require.NoError(t, err)
@@ -32,7 +32,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 		prices2, err := domain.NewPrices(domain.PricesDto{
 			ID:     id2,
 			Date:   date2,
-			Zone:   domain.PricesZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
+			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
 			Values: []domain.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
 		})
 		require.NoError(t, err)
@@ -64,7 +64,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 		prices1, err := domain.NewPrices(domain.PricesDto{
 			ID:     id1,
 			Date:   date1,
-			Zone:   domain.PricesZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
+			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
 			Values: []domain.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
 		})
 		require.NoError(t, err)
@@ -72,7 +72,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 		prices2, err := domain.NewPrices(domain.PricesDto{
 			ID:     id2,
 			Date:   date2,
-			Zone:   domain.PricesZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
+			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
 			Values: []domain.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
 		})
 		require.NoError(t, err)

@@ -9,17 +9,17 @@ import (
 // ZonesService is the domain service that manages operations
 // over Zone's.
 type ZonesService struct {
-	pricesZonesRepository domain.PricesZonesRepository
+	zonesRepository domain.ZonesRepository
 }
 
 // NewZonesService returns a new ListingService.
-func NewZonesService(pricesZonesRepository domain.PricesZonesRepository) ZonesService {
+func NewZonesService(zonesRepository domain.ZonesRepository) ZonesService {
 	return ZonesService{
-		pricesZonesRepository: pricesZonesRepository,
+		zonesRepository: zonesRepository,
 	}
 }
 
-// ListZones returns the list of available PricesZone's.
-func (s ZonesService) ListZones(ctx context.Context) ([]domain.PricesZone, error) {
-	return s.pricesZonesRepository.GetAll(ctx)
+// ListZones returns the list of available Zone's.
+func (s ZonesService) ListZones(ctx context.Context) ([]domain.Zone, error) {
+	return s.zonesRepository.GetAll(ctx)
 }
