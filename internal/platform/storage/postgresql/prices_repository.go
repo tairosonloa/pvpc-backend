@@ -19,28 +19,28 @@ const (
 )
 
 type pricesSchema struct {
-	ID     string           `db:"id"`
-	Date   string           `db:"date"`
-	ZoneID string           `db:"zone_id"`
-	Prices priceSchemaSlice `db:"values"`
+	ID           string                 `db:"id"`
+	Date         string                 `db:"date"`
+	ZoneID       string                 `db:"zone_id"`
+	HourlyPrices hourlyPriceSchemaSlice `db:"values"`
 }
 
-type priceSchemaSlice []priceSchema
+type hourlyPriceSchemaSlice []hourlyPriceSchema
 
-type priceSchema struct {
+type hourlyPriceSchema struct {
 	Datetime string  `json:"datetime"`
 	Price    float32 `json:"value"`
 }
 
-// Make the priceSchemaSlice type implement the driver.Value interface.
+// Make the hourlyPriceSchemaSlice type implement the driver.Value interface.
 // This method simply returns the JSON-encoded representation of the struct.
-func (ps priceSchemaSlice) Value() (driver.Value, error) {
+func (ps hourlyPriceSchemaSlice) Value() (driver.Value, error) {
 	return json.Marshal(ps)
 }
 
-// Make the priceSchemaSlice type implement the sql.Scanner interface.
+// Make the hourlyPriceSchemaSlice type implement the sql.Scanner interface.
 // This method simply decodes a JSON-encoded value into the struct fields.
-func (ps *priceSchemaSlice) Scan(value interface{}) error {
+func (ps *hourlyPriceSchemaSlice) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.NewDomainError(errors.PersistenceError, "sql.Scanner Scan() custom implementation: type assertion to []byte failed")
@@ -71,19 +71,19 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 	dbPrices := make([]interface{}, len(prices))
 
 	for i, p := range prices {
-		values := make([]priceSchema, len(p.Values()))
+		values := make([]hourlyPriceSchema, len(p.Values()))
 		for j, v := range p.Values() {
-			values[j] = priceSchema{
+			values[j] = hourlyPriceSchema{
 				Datetime: v.Datetime(),
 				Price:    v.Value(),
 			}
 		}
 
 		dbPrices[i] = pricesSchema{
-			ID:     p.ID().String(),
-			Date:   p.Date(),
-			ZoneID: p.Zone().ID().String(),
-			Prices: values,
+			ID:           p.ID().String(),
+			Date:         p.Date(),
+			ZoneID:       p.Zone().ID().String(),
+			HourlyPrices: values,
 		}
 	}
 

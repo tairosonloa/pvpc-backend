@@ -7,21 +7,21 @@ import (
 	"pvpc-backend/internal/domain/errors"
 )
 
-// ZoneDto is the DTO structure that represents a PVPC prices zone.
+// ZoneDto is the DTO struct used to build a Zone domain entity by calling domain.NewZone().
 type ZoneDto struct {
 	ID         string
 	ExternalID string
 	Name       string
 }
 
-// Zone represents a PVPC prices zone.
+// Zone is the domain entity that represents a PVPC zone.
 type Zone struct {
 	id         ZoneID
 	externalID string
 	name       string
 }
 
-// ZoneID represents the PVPC prices zone unique identifier.
+// ZoneID represents the Zone's unique identifier.
 type ZoneID struct {
 	value string
 }
@@ -75,17 +75,17 @@ func NewZone(zoneDto ZoneDto) (Zone, error) {
 	return zone, nil
 }
 
-// ID returns the Zone unique identifier.
+// ID returns the Zone's unique identifier.
 func (c Zone) ID() ZoneID {
 	return c.id
 }
 
-// ExternalID returns the Zone external ID.
+// ExternalID returns the Zone's external ID.
 func (c Zone) ExternalID() string {
 	return c.externalID
 }
 
-// Name returns the Zone Name.
+// Name returns the Zone's Name.
 func (c Zone) Name() string {
 	return c.name
 }

@@ -25,7 +25,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 			ID:     id1,
 			Date:   date1,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
 		})
 		require.NoError(t, err)
 
@@ -33,14 +33,14 @@ func Test_PricesRepository_Save(t *testing.T) {
 			ID:     id2,
 			Date:   date2,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
 		})
 		require.NoError(t, err)
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
-		values := priceSchemaSlice{{Datetime: datetime, Price: value}, {Datetime: datetime, Price: value}}
+		values := hourlyPriceSchemaSlice{{Datetime: datetime, Price: value}, {Datetime: datetime, Price: value}}
 
 		sqlMock.ExpectExec(
 			"INSERT INTO prices (id, date, zone_id, values) VALUES (?, ?, ?, ?), (?, ?, ?, ?)").
@@ -65,7 +65,7 @@ func Test_PricesRepository_Save(t *testing.T) {
 			ID:     id1,
 			Date:   date1,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.PriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
 		})
 		require.NoError(t, err)
 
@@ -73,14 +73,14 @@ func Test_PricesRepository_Save(t *testing.T) {
 			ID:     id2,
 			Date:   date2,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.PriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: value}, {Datetime: datetime, Value: value}},
 		})
 		require.NoError(t, err)
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
-		values := priceSchemaSlice{{Datetime: datetime, Price: value}, {Datetime: datetime, Price: value}}
+		values := hourlyPriceSchemaSlice{{Datetime: datetime, Price: value}, {Datetime: datetime, Price: value}}
 
 		sqlMock.ExpectExec(
 			"INSERT INTO prices (id, date, zone_id, values) VALUES (?, ?, ?, ?), (?, ?, ?, ?)").
