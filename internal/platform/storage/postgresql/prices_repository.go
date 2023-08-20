@@ -8,8 +8,8 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/errors"
+	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/errors"
 )
 
 // PricesRepository is a PostgreSQL pvpc.PricesRepository implementation.

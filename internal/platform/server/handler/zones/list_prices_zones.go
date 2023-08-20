@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/common"
+	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/listing"
+	"pvpc-backend/internal/platform/server/common"
 )
 
 type response struct {

@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/errors"
-	"go-pvpc/internal/platform/storage/storagemocks"
+	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/errors"
+	"pvpc-backend/internal/platform/storage/storagemocks"
 )
 
 func Test_ListingService(t *testing.T) {

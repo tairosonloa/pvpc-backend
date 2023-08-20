@@ -3,7 +3,7 @@ package common
 import (
 	"net/http"
 
-	"go-pvpc/internal/errors"
+	"pvpc-backend/internal/errors"
 )
 
 type APIErrorResponse struct {

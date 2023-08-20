@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	pvpc "go-pvpc/internal"
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/storage/storagemocks"
+	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/listing"
+	"pvpc-backend/internal/platform/storage/storagemocks"
 )
 
 func Test_ListZonesHandler_Success(t *testing.T) {

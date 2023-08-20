@@ -3,7 +3,7 @@ package listing
 import (
 	"context"
 
-	pvpc "go-pvpc/internal"
+	pvpc "pvpc-backend/internal"
 )
 
 // ListingService is the domain service that manages the listing of

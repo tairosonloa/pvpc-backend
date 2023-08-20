@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pvpc "go-pvpc/internal"
+	pvpc "pvpc-backend/internal"
 )
 
 func Test_PricesRepository_Save(t *testing.T) {

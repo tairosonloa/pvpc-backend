@@ -12,11 +12,11 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
-	"go-pvpc/internal/listing"
-	"go-pvpc/internal/platform/server/handler/health"
-	"go-pvpc/internal/platform/server/handler/zones"
-	"go-pvpc/internal/platform/server/middleware"
-	"go-pvpc/internal/platform/storage/postgresql"
+	"pvpc-backend/internal/listing"
+	"pvpc-backend/internal/platform/server/handler/health"
+	"pvpc-backend/internal/platform/server/handler/zones"
+	"pvpc-backend/internal/platform/server/middleware"
+	"pvpc-backend/internal/platform/storage/postgresql"
 )
 
 type Server struct {

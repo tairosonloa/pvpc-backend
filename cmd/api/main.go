@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
-	"go-pvpc/internal/platform/server"
+	"pvpc-backend/internal/platform/server"
 )
 
 type config struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"regexp"
 
-	"go-pvpc/internal/errors"
+	"pvpc-backend/internal/errors"
 )
 
 // PricesDto is the DTO structure that represents the PVPC prices for a day.

@@ -1,7 +1,7 @@
 {
   "go.formatTool": "default", // Use language server gopls
   "gopls": {
-    "formatting.local": "go-pvpc", // go-pvpc are local packages
+    "formatting.local": "pvpc-backend", // pvpc-backend are local packages
     "ui.semanticTokens": true
   },
   "cSpell.words": [

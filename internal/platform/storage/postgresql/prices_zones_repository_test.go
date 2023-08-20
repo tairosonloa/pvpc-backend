@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pvpc "go-pvpc/internal"
-	dErrors "go-pvpc/internal/errors"
+	pvpc "pvpc-backend/internal"
+	dErrors "pvpc-backend/internal/errors"
 )
 
 func Test_ZonesRepository_GetAll(t *testing.T) {

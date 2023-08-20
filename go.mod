@@ -1,4 +1,4 @@
-module go-pvpc
+module pvpc-backend
 
 go 1.20
 
