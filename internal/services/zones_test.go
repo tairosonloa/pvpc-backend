@@ -10,13 +10,13 @@ import (
 
 	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/errors"
-	"pvpc-backend/internal/platform/storage/storagemocks"
+	"pvpc-backend/internal/mocks"
 )
 
 func Test_ZonesService_ListZones(t *testing.T) {
 
 	t.Run("fails with a repository error", func(t *testing.T) {
-		repositoryMock := new(storagemocks.ZonesRepository)
+		repositoryMock := new(mocks.ZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.NewDomainError(errors.PersistenceError, "mock-error"))
 
 		listingService := NewZonesService(repositoryMock)
@@ -35,7 +35,7 @@ func Test_ZonesService_ListZones(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		repositoryMock := new(storagemocks.ZonesRepository)
+		repositoryMock := new(mocks.ZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return([]domain.Zone{zone}, nil)
 
 		listingService := NewZonesService(repositoryMock)

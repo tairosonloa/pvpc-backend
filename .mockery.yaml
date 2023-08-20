@@ -5,8 +5,8 @@ packages:
     config:
       mockname: "{{.InterfaceName}}"
       filename: "{{.InterfaceNameSnake}}.go"
-      outpkg: storagemocks
-      dir: internal/platform/storage/storagemocks
+      outpkg: mocks
+      dir: internal/mocks
     interfaces:
       PricesRepository:
       ZonesRepository:
