@@ -8,17 +8,17 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/errors"
 )
 
-// PricesRepository is a PostgreSQL pvpc.PricesRepository implementation.
+// PricesRepository is a PostgreSQL domain.PricesRepository implementation.
 type PricesRepository struct {
 	db        *sql.DB
 	dbTimeout time.Duration
 }
 
-// NewPricesRepository initializes a PostgreSQL-based implementation of pvpc.PricesRepository.
+// NewPricesRepository initializes a PostgreSQL-based implementation of domain.PricesRepository.
 func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository {
 	return &PricesRepository{
 		db:        db,
@@ -26,8 +26,8 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 	}
 }
 
-// Save implements the pvpc.PricesRepository interface.
-func (r *PricesRepository) Save(ctx context.Context, prices []pvpc.Prices) error {
+// Save implements the domain.PricesRepository interface.
+func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) error {
 	log.Debug("Saving Prices into database")
 	pricesStruct := sqlbuilder.NewStruct(new(pricesSchema))
 

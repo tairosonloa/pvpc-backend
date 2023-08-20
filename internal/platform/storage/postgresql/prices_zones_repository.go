@@ -8,17 +8,17 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/errors"
 )
 
-// PricesZonesRepository is a PostgreSQL pvpc.PricesZonesRepository implementation.
+// PricesZonesRepository is a PostgreSQL domain.PricesZonesRepository implementation.
 type PricesZonesRepository struct {
 	db        *sql.DB
 	dbTimeout time.Duration
 }
 
-// NewPricesZonesRepository initializes a PostgreSQL-based implementation of pvpc.PricesZonesRepository.
+// NewPricesZonesRepository initializes a PostgreSQL-based implementation of domain.PricesZonesRepository.
 func NewPricesZonesRepository(db *sql.DB, dbTimeout time.Duration) *PricesZonesRepository {
 	return &PricesZonesRepository{
 		db:        db,
@@ -26,7 +26,7 @@ func NewPricesZonesRepository(db *sql.DB, dbTimeout time.Duration) *PricesZonesR
 	}
 }
 
-func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]domain.PricesZone, error) {
 	log.Debug("Getting all PricesZones from database")
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
@@ -41,7 +41,7 @@ func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, 
 	}
 	defer rows.Close()
 
-	zones := make([]pvpc.PricesZone, 0, 5)
+	zones := make([]domain.PricesZone, 0, 5)
 	for rows.Next() {
 		var dbZone zoneSchema
 		err := rows.Scan(zoneStruct.Addr(&dbZone)...)
@@ -59,7 +59,7 @@ func (r *PricesZonesRepository) GetAll(ctx context.Context) ([]pvpc.PricesZone, 
 	return zones, nil
 }
 
-func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneID) (pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetByID(ctx context.Context, id domain.PricesZoneID) (domain.PricesZone, error) {
 	log.Debug("Getting PricesZone from database by ID", "id", id.String())
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
@@ -76,19 +76,19 @@ func (r *PricesZonesRepository) GetByID(ctx context.Context, id pvpc.PricesZoneI
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return pvpc.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with ID %s not found", id.String())
+			return domain.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with ID %s not found", id.String())
 		}
-		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
+		return domain.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
 	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
+		return domain.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
 	}
 
 	return zone, nil
 }
-func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID string) (pvpc.PricesZone, error) {
+func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID string) (domain.PricesZone, error) {
 	log.Debug("Getting PricesZone from database by externalID", "externalID", externalID)
 	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
 
@@ -104,21 +104,21 @@ func (r *PricesZonesRepository) GetByExternalID(ctx context.Context, externalID 
 	err := row.Scan(zoneStruct.Addr(&dbZone)...)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return pvpc.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with externalID %s not found", externalID)
+			return domain.PricesZone{}, errors.NewDomainError(errors.PricesZoneNotFound, "PricesZone with externalID %s not found", externalID)
 		}
-		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
+		return domain.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from database to schema")
 	}
 
 	zone, err := mapDbPricesZoneToDomain(dbZone)
 	if err != nil {
-		return pvpc.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
+		return domain.PricesZone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping PricesZone from schema to domain")
 	}
 
 	return zone, nil
 }
 
-func mapDbPricesZoneToDomain(zoneSchema zoneSchema) (pvpc.PricesZone, error) {
-	return pvpc.NewPricesZone(pvpc.PricesZoneDto{
+func mapDbPricesZoneToDomain(zoneSchema zoneSchema) (domain.PricesZone, error) {
+	return domain.NewPricesZone(domain.PricesZoneDto{
 		ID:         zoneSchema.ID,
 		ExternalID: zoneSchema.ExternalID,
 		Name:       zoneSchema.Name,

@@ -1,4 +1,4 @@
-package pvpc
+package domain
 
 import (
 	"context"

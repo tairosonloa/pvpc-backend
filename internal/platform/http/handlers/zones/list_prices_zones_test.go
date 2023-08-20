@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/platform/storage/storagemocks"
 	"pvpc-backend/internal/services"
 )
@@ -24,14 +24,14 @@ func Test_ListZonesHandlerV1_Success(t *testing.T) {
 	r := gin.New()
 	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
 
-	zone1, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{
+	zone1, err := domain.NewPricesZone(domain.PricesZoneDto{
 		ID:         "ABC",
 		ExternalID: "1234",
 		Name:       "zone1",
 	})
 	require.NoError(t, err)
 
-	zone2, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{
+	zone2, err := domain.NewPricesZone(domain.PricesZoneDto{
 		ID:         "DEF",
 		ExternalID: "5678",
 		Name:       "zone2",
@@ -41,7 +41,7 @@ func Test_ListZonesHandlerV1_Success(t *testing.T) {
 	repositoryMock.On(
 		"GetAll",
 		mock.Anything,
-	).Return([]pvpc.PricesZone{zone1, zone2}, nil)
+	).Return([]domain.PricesZone{zone1, zone2}, nil)
 
 	req, err := http.NewRequest(http.MethodGet, "/v1/zones", nil)
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 	repositoryMock.On(
 		"GetAll",
 		mock.Anything,
-	).Return([]pvpc.PricesZone{}, nil)
+	).Return([]domain.PricesZone{}, nil)
 
 	req, err := http.NewRequest(http.MethodGet, "/v1/zones", nil)
 	require.NoError(t, err)

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/errors"
 	"pvpc-backend/internal/platform/storage/storagemocks"
 )
@@ -28,7 +28,7 @@ func Test_ZonesService_ListZones(t *testing.T) {
 	})
 
 	t.Run("succeeds and returns PricesZone's", func(t *testing.T) {
-		zone, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{
+		zone, err := domain.NewPricesZone(domain.PricesZoneDto{
 			ID:         "ZON",
 			ExternalID: "123",
 			Name:       "Zone 1",
@@ -36,7 +36,7 @@ func Test_ZonesService_ListZones(t *testing.T) {
 		require.NoError(t, err)
 
 		repositoryMock := new(storagemocks.PricesZonesRepository)
-		repositoryMock.On("GetAll", mock.Anything).Return([]pvpc.PricesZone{zone}, nil)
+		repositoryMock.On("GetAll", mock.Anything).Return([]domain.PricesZone{zone}, nil)
 
 		listingService := NewZonesService(repositoryMock)
 		res, err := listingService.ListZones(context.Background())

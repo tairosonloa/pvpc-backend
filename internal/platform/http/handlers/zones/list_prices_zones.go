@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/platform/http/common"
 	"pvpc-backend/internal/services"
 )
@@ -36,7 +36,7 @@ func ListZonesHandlerV1(listingService services.ZonesService) gin.HandlerFunc {
 	}
 }
 
-func mapZonesResponse(zones []pvpc.PricesZone) response {
+func mapZonesResponse(zones []domain.PricesZone) response {
 	response := response{
 		Zones: make([]zonesResponse, len(zones)),
 		Total: len(zones),

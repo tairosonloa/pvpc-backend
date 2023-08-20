@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pvpc "pvpc-backend/internal"
+	"pvpc-backend/internal/domain"
 	dErrors "pvpc-backend/internal/errors"
 )
 
@@ -31,7 +31,7 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("when there are zones in the database, returns a slice of pvpc.PricesZones", func(t *testing.T) {
+	t.Run("when there are zones in the database, returns a slice of domain.PricesZones", func(t *testing.T) {
 		id1, externalID1, name1 := "ZON", "123", "Test zone 1"
 		id2, externalID2, name2 := "ABC", "456", "Test zone 2"
 
@@ -50,10 +50,10 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		result, err := repo.GetAll(context.Background())
 		require.NoError(t, err)
 
-		expected1, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{ID: id1, ExternalID: externalID1, Name: name1})
+		expected1, err := domain.NewPricesZone(domain.PricesZoneDto{ID: id1, ExternalID: externalID1, Name: name1})
 		require.NoError(t, err)
 
-		expected2, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{ID: id2, ExternalID: externalID2, Name: name2})
+		expected2, err := domain.NewPricesZone(domain.PricesZoneDto{ID: id2, ExternalID: externalID2, Name: name2})
 		require.NoError(t, err)
 
 		assert.NoError(t, sqlMock.ExpectationsWereMet())
@@ -63,7 +63,7 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		assert.Equal(t, expected2, result[1])
 	})
 
-	t.Run("when there are NOT zones in the database, returns an empty slice of pvpc.PricesZones", func(t *testing.T) {
+	t.Run("when there are NOT zones in the database, returns an empty slice of domain.PricesZones", func(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
@@ -87,7 +87,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 	t.Run("when db returns error, repository returns error", func(t *testing.T) {
 		zoneIDString := "ZON"
-		zoneID, err := pvpc.NewPricesZoneID(zoneIDString)
+		zoneID, err := domain.NewPricesZoneID(zoneIDString)
 		require.NoError(t, err)
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -105,9 +105,9 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("when db returns no error and zone is found, repository returns a pvpc.PricesZone", func(t *testing.T) {
+	t.Run("when db returns no error and zone is found, repository returns a domain.PricesZone", func(t *testing.T) {
 		id, externalID, name := "ZON", "123", "Test zone"
-		zoneID, err := pvpc.NewPricesZoneID(id)
+		zoneID, err := domain.NewPricesZoneID(id)
 		require.NoError(t, err)
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -125,7 +125,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 		result, err := repo.GetByID(context.Background(), zoneID)
 		require.NoError(t, err)
 
-		expected, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{ID: id, ExternalID: externalID, Name: name})
+		expected, err := domain.NewPricesZone(domain.PricesZoneDto{ID: id, ExternalID: externalID, Name: name})
 		require.NoError(t, err)
 
 		assert.NoError(t, sqlMock.ExpectationsWereMet())
@@ -134,9 +134,9 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 	})
 
-	t.Run("when db returns no error but zone is NOT found, repository returns an empty pvpc.PricesZone and error", func(t *testing.T) {
+	t.Run("when db returns no error but zone is NOT found, repository returns an empty domain.PricesZone and error", func(t *testing.T) {
 		id := "ZON"
-		zoneID, err := pvpc.NewPricesZoneID(id)
+		zoneID, err := domain.NewPricesZoneID(id)
 		require.NoError(t, err)
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -154,7 +154,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Equal(t, dErrors.PricesZoneNotFound, dErrors.Code(err))
-		assert.Equal(t, pvpc.PricesZone{}, result)
+		assert.Equal(t, domain.PricesZone{}, result)
 		assert.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }
@@ -179,7 +179,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("when db returns no error, repository returns a pvpc.PricesZone", func(t *testing.T) {
+	t.Run("when db returns no error, repository returns a domain.PricesZone", func(t *testing.T) {
 		id, externalID, name := "ZON", "123", "Test zone"
 
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -197,7 +197,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		result, err := repo.GetByExternalID(context.Background(), externalID)
 		require.NoError(t, err)
 
-		expected, err := pvpc.NewPricesZone(pvpc.PricesZoneDto{ID: id, ExternalID: externalID, Name: name})
+		expected, err := domain.NewPricesZone(domain.PricesZoneDto{ID: id, ExternalID: externalID, Name: name})
 		require.NoError(t, err)
 
 		assert.NoError(t, sqlMock.ExpectationsWereMet())
@@ -205,7 +205,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		assert.Equal(t, expected, result)
 	})
 
-	t.Run("when db returns no error but zone is NOT found, repository returns an empty pvpc.PricesZone and error", func(t *testing.T) {
+	t.Run("when db returns no error but zone is NOT found, repository returns an empty domain.PricesZone and error", func(t *testing.T) {
 		externalID := "123"
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
@@ -222,7 +222,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Equal(t, dErrors.PricesZoneNotFound, dErrors.Code(err))
-		assert.Equal(t, pvpc.PricesZone{}, result)
+		assert.Equal(t, domain.PricesZone{}, result)
 		assert.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }
