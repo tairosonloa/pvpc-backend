@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -14,6 +15,7 @@ import (
 )
 
 func Test_ZonesService_ListZones(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 
 	t.Run("fails with a repository error", func(t *testing.T) {
 		repositoryMock := new(mocks.ZonesRepository)

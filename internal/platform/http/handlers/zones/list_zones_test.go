@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/stretchr/testify/mock"
@@ -17,6 +18,7 @@ import (
 )
 
 func Test_ListZonesHandlerV1_Success(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
 	listingService := services.NewZonesService(repositoryMock)
@@ -59,6 +61,7 @@ func Test_ListZonesHandlerV1_Success(t *testing.T) {
 }
 
 func Test_ListZonesHandlerV1_Empty(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
 	listingService := services.NewZonesService(repositoryMock)
@@ -85,6 +88,7 @@ func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 }
 
 func Test_ListZonesHandlerV1_Error(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
 	listingService := services.NewZonesService(repositoryMock)

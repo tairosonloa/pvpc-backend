@@ -20,6 +20,7 @@ type config struct {
 	Port            uint          `split_words:"true" default:"8080"`
 	ShutdownTimeout time.Duration `split_words:"true" default:"10s"`
 	Env             string        `split_words:"true" required:"true"`
+	LogLevel        string        `split_words:"true" default:"info"`
 	// Database configuration
 	DbUser    string        `split_words:"true" default:"test_db_user"`
 	DbPass    string        `split_words:"true" default:"test_db_pass"`
@@ -32,8 +33,8 @@ type config struct {
 func main() {
 	var err error
 
-	configureLogger()
 	cfg := loadConfig()
+	configureLogger(cfg.LogLevel)
 
 	db, err := databaseConnection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
 	if err != nil {
@@ -45,8 +46,9 @@ func main() {
 	srv.Run()
 }
 
-func configureLogger() {
+func configureLogger(level string) {
 	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
+		Level:           log.ParseLevel(level),
 		Prefix:          "pvpc",
 		ReportTimestamp: true,
 		TimeFunction:    log.NowUTC,

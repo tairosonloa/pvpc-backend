@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_HealthCheckHandlerV1_UP(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
@@ -38,6 +40,7 @@ func Test_HealthCheckHandlerV1_UP(t *testing.T) {
 }
 
 func Test_HealthCheckHandlerV1_DOWN(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
