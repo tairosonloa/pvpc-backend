@@ -12,14 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	pvpc "pvpc-backend/internal"
-	"pvpc-backend/internal/listing"
 	"pvpc-backend/internal/platform/storage/storagemocks"
+	"pvpc-backend/internal/services"
 )
 
 func Test_ListZonesHandlerV1_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
-	listingService := listing.NewListingService(repositoryMock)
+	listingService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
 	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
@@ -61,7 +61,7 @@ func Test_ListZonesHandlerV1_Success(t *testing.T) {
 func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
-	listingService := listing.NewListingService(repositoryMock)
+	listingService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
 	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
@@ -87,7 +87,7 @@ func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 func Test_ListZonesHandlerV1_Error(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(storagemocks.PricesZonesRepository)
-	listingService := listing.NewListingService(repositoryMock)
+	listingService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
 	r.GET("/v1/zones", ListZonesHandlerV1(listingService))

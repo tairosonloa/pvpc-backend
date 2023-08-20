@@ -12,11 +12,11 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
-	"pvpc-backend/internal/listing"
-	"pvpc-backend/internal/platform/http/handler/health"
-	"pvpc-backend/internal/platform/http/handler/zones"
-	"pvpc-backend/internal/platform/http/middleware"
+	"pvpc-backend/internal/platform/http/handlers/health"
+	"pvpc-backend/internal/platform/http/handlers/zones"
+	"pvpc-backend/internal/platform/http/middlewares"
 	"pvpc-backend/internal/platform/storage/postgresql"
+	servicespkg "pvpc-backend/internal/services"
 )
 
 type HttpServer struct {
@@ -33,7 +33,7 @@ type storage struct {
 }
 
 type services struct {
-	listingService listing.ListingService
+	zonesService servicespkg.ZonesService
 }
 
 func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) HttpServer {
@@ -59,7 +59,7 @@ func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Dura
 
 func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(gin.Recovery())
-	s.engine.Use(middleware.Logger([]string{"/health"}))
+	s.engine.Use(middlewares.Logger([]string{"/health"}))
 }
 
 func (s *HttpServer) registerServices() {
@@ -67,7 +67,7 @@ func (s *HttpServer) registerServices() {
 	pricesZonesRepository := postgresql.NewPricesZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
-	s.services.listingService = listing.NewListingService(pricesZonesRepository)
+	s.services.zonesService = servicespkg.NewZonesService(pricesZonesRepository)
 }
 
 func (s *HttpServer) registerRoutes() {
@@ -75,7 +75,7 @@ func (s *HttpServer) registerRoutes() {
 	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
 
 	// Zones
-	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.listingService))
+	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.zonesService))
 }
 
 func (s *HttpServer) Run() {

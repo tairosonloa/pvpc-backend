@@ -1,4 +1,4 @@
-package listing
+package services
 
 import (
 	"context"
@@ -13,14 +13,14 @@ import (
 	"pvpc-backend/internal/platform/storage/storagemocks"
 )
 
-func Test_ListingService(t *testing.T) {
+func Test_ZonesService_ListZones(t *testing.T) {
 
 	t.Run("fails with a repository error", func(t *testing.T) {
 		repositoryMock := new(storagemocks.PricesZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.NewDomainError(errors.PersistenceError, "mock-error"))
 
-		listingService := NewListingService(repositoryMock)
-		res, err := listingService.ListPricesZones(context.Background())
+		listingService := NewZonesService(repositoryMock)
+		res, err := listingService.ListZones(context.Background())
 		require.Error(t, err)
 		assert.Nil(t, res)
 
@@ -38,8 +38,8 @@ func Test_ListingService(t *testing.T) {
 		repositoryMock := new(storagemocks.PricesZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return([]pvpc.PricesZone{zone}, nil)
 
-		listingService := NewListingService(repositoryMock)
-		res, err := listingService.ListPricesZones(context.Background())
+		listingService := NewZonesService(repositoryMock)
+		res, err := listingService.ListZones(context.Background())
 		require.NoError(t, err)
 		assert.Equal(t, zone, res[0])
 
