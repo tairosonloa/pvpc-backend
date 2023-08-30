@@ -59,7 +59,7 @@ func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Dura
 
 func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(gin.Recovery())
-	s.engine.Use(middlewares.Logger([]string{"/health"}))
+	s.engine.Use(middlewares.Logger([]string{"/v1/health"}))
 }
 
 func (s *HttpServer) registerServices() {

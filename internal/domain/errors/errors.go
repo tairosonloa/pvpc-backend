@@ -1,6 +1,7 @@
 package errors
 
 import (
+	stdErrors "errors"
 	"fmt"
 )
 
@@ -19,8 +20,15 @@ type domainError struct {
 }
 
 func (e domainError) Error() string {
-	// return fmt.Sprintf("%s: %s", e.errorCode, e.error.Error())
 	return e.error.Error()
+}
+
+func Unwrap(err error) error {
+	if e, ok := err.(domainError); ok {
+		return stdErrors.Unwrap(e.error)
+	}
+
+	return stdErrors.Unwrap(err)
 }
 
 func Code(err error) ErrorCode {
@@ -35,16 +43,16 @@ func Code(err error) ErrorCode {
 	return ""
 }
 
-func WrapIntoDomainError(err error, errorCode ErrorCode, msg string) error {
+func NewDomainError(errorCode ErrorCode, format string, args ...interface{}) error {
 	return domainError{
-		error:     fmt.Errorf("%s: [%w]", msg, err),
+		error:     fmt.Errorf(format, args...),
 		errorCode: errorCode,
 	}
 }
 
-func NewDomainError(errorCode ErrorCode, format string, args ...interface{}) error {
+func WrapIntoDomainError(err error, errorCode ErrorCode, msg string) error {
 	return domainError{
-		error:     fmt.Errorf(format, args...),
+		error:     fmt.Errorf("%s: [%w]", msg, err),
 		errorCode: errorCode,
 	}
 }

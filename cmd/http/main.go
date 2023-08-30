@@ -59,15 +59,20 @@ func configureLogger(level string) {
 func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file: %v", err)
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
-		log.Fatal("Error processing env config: %v", err)
+		log.Fatalf("Error processing env config: %v", err)
 	}
 	return cfg
 }
 
 func databaseConnection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
-	return sql.Open("pgx", connStr)
+	conn, err := sql.Open("pgx", connStr)
+	if err != nil {
+		return nil, err
+	}
+	err = conn.Ping()
+	return conn, err
 }
