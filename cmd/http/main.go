@@ -69,10 +69,10 @@ func loadConfig() config {
 
 func databaseConnection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
-	conn, err := sql.Open("pgx", connStr)
+	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		return nil, err
 	}
-	err = conn.Ping()
-	return conn, err
+	err = db.Ping()
+	return db, err
 }

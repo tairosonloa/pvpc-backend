@@ -82,6 +82,7 @@ func (s *HttpServer) Run() {
 	srv := &http.Server{
 		Addr:    s.address,
 		Handler: s.engine,
+		// TODO: add ErrorLog
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
