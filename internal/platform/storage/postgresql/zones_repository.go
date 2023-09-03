@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
 	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/domain/errors"
+	"pvpc-backend/pkg/logger"
 )
 
 const (
@@ -37,10 +37,10 @@ func NewZonesRepository(db *sql.DB, dbTimeout time.Duration) *ZonesRepository {
 }
 
 func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
-	log.Debug("Getting all Zones from database")
-	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
+	logger.DebugContext(ctx, "Getting all Zones from database")
+	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
-	query, _ := zoneStruct.SelectFrom(zonesTableName).Build()
+	query, _ := zoneSQL.SelectFrom(zonesTableName).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -54,12 +54,12 @@ func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
 	zones := make([]domain.Zone, 0, 5)
 	for rows.Next() {
 		var dbZone zoneSchema
-		err := rows.Scan(zoneStruct.Addr(&dbZone)...)
+		err := rows.Scan(zoneSQL.Addr(&dbZone)...)
 		if err != nil {
 			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from database to schema")
 		}
 
-		zone, err := mapDbZoneToDomain(dbZone)
+		zone, err := mapZoneSchemaToDomain(dbZone)
 		if err != nil {
 			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from schema to domain")
 		}
@@ -70,11 +70,11 @@ func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
 }
 
 func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain.Zone, error) {
-	log.Debug("Getting Zone from database by ID", "id", id.String())
-	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
+	logger.DebugContext(ctx, "Getting Zone from database by ID", "id", id.String())
+	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
-	qb := zoneStruct.SelectFrom(zonesTableName)
-	query, args := qb.Where(qb.Equal("id", id.String())).Build()
+	selectQB := zoneSQL.SelectFrom(zonesTableName)
+	query, args := selectQB.Where(selectQB.Equal("id", id.String())).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -82,7 +82,7 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	err := row.Scan(zoneStruct.Addr(&dbZone)...)
+	err := row.Scan(zoneSQL.Addr(&dbZone)...)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -91,7 +91,7 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 		return domain.Zone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from database to schema")
 	}
 
-	zone, err := mapDbZoneToDomain(dbZone)
+	zone, err := mapZoneSchemaToDomain(dbZone)
 	if err != nil {
 		return domain.Zone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from schema to domain")
 	}
@@ -99,11 +99,11 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 	return zone, nil
 }
 func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string) (domain.Zone, error) {
-	log.Debug("Getting Zone from database by externalID", "externalID", externalID)
-	zoneStruct := sqlbuilder.NewStruct(new(zoneSchema))
+	logger.DebugContext(ctx, "Getting Zone from database by externalID", "externalID", externalID)
+	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
-	qb := zoneStruct.SelectFrom(zonesTableName)
-	query, args := qb.Where(qb.Equal("external_id", externalID)).Build()
+	selectQB := zoneSQL.SelectFrom(zonesTableName)
+	query, args := selectQB.Where(selectQB.Equal("external_id", externalID)).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -111,7 +111,7 @@ func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string
 	row := r.db.QueryRowContext(ctxTimeout, query, args...)
 
 	var dbZone zoneSchema
-	err := row.Scan(zoneStruct.Addr(&dbZone)...)
+	err := row.Scan(zoneSQL.Addr(&dbZone)...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Zone{}, errors.NewDomainError(errors.ZoneNotFound, "Zone with externalID %s not found", externalID)
@@ -119,7 +119,7 @@ func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string
 		return domain.Zone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from database to schema")
 	}
 
-	zone, err := mapDbZoneToDomain(dbZone)
+	zone, err := mapZoneSchemaToDomain(dbZone)
 	if err != nil {
 		return domain.Zone{}, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Zone from schema to domain")
 	}
@@ -127,7 +127,7 @@ func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string
 	return zone, nil
 }
 
-func mapDbZoneToDomain(zoneSchema zoneSchema) (domain.Zone, error) {
+func mapZoneSchemaToDomain(zoneSchema zoneSchema) (domain.Zone, error) {
 	return domain.NewZone(domain.ZoneDto{
 		ID:         zoneSchema.ID,
 		ExternalID: zoneSchema.ExternalID,

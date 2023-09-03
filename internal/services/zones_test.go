@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
+	"os"
 	"testing"
 
-	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -12,10 +12,11 @@ import (
 	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/domain/errors"
 	"pvpc-backend/internal/mocks"
+	"pvpc-backend/pkg/logger"
 )
 
 func Test_ZonesService_ListZones(t *testing.T) {
-	log.SetLevel(log.DebugLevel)
+	logger.SetTestLogger(os.Stderr)
 
 	t.Run("fails with a repository error", func(t *testing.T) {
 		repositoryMock := new(mocks.ZonesRepository)

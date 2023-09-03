@@ -3,13 +3,15 @@ package middlewares
 import (
 	"bytes"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"pvpc-backend/internal/platform/http/responses"
+	"pvpc-backend/pkg/logger"
 )
 
 type bodyLogWriter struct {
@@ -44,44 +46,52 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Prepare (pre-request)
 		start := time.Now()
-		path := c.Request.URL.Path
 		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 		c.Writer = blw
+
+		path := c.Request.URL.Path
+		if c.Request.URL.RawQuery != "" {
+			path = path + "?" + c.Request.URL.RawQuery
+		}
+		method := c.Request.Method
+		clientIP := c.ClientIP()
+		requestID := uuid.New().String()
+		c.Set(logger.ContextKeyRequestID, requestID)
+
+		logger.LogAttrs(c, slog.LevelInfo, "Received new request",
+			slog.String("clientIP", clientIP),
+			slog.String("method", method),
+			slog.String("path", path),
+		)
 
 		// Process request
 		c.Next()
 
 		// Results (post-request)
 		if _, ok := skip[path]; !ok {
-			latency := time.Since(start).Truncate(time.Millisecond)
-			clientIP := c.ClientIP()
-			method := c.Request.Method
+			latency := time.Since(start).Truncate(time.Millisecond).String()
 			statusCode := c.Writer.Status()
-
-			if c.Request.URL.RawQuery != "" {
-				path = path + "?" + c.Request.URL.RawQuery
-			}
 
 			if statusCode >= http.StatusBadRequest {
 				response := responses.APIErrorResponse{}
 				json.Unmarshal(blw.body.Bytes(), &response)
 
-				log.Error("Errored request",
-					"statusCode", statusCode,
-					"latency", latency,
-					"clientIP", clientIP,
-					"method", method,
-					"path", path,
-					"errCode", response.ErrorCode,
-					"errMsg", response.Message,
+				logger.LogAttrs(c, slog.LevelError, "Errored request",
+					slog.String("clientIP", clientIP),
+					slog.String("method", method),
+					slog.String("path", path),
+					slog.Int("status", statusCode),
+					slog.String("latency", latency),
+					slog.String("errCode", response.ErrorCode),
+					slog.String("errMsg", response.Message),
 				)
 			} else {
-				log.Info("Handled request",
-					"statusCode", statusCode,
-					"latency", latency,
-					"clientIP", clientIP,
-					"method", method,
-					"path", path,
+				logger.LogAttrs(c, slog.LevelInfo, "Handled request",
+					slog.String("client_ip", clientIP),
+					slog.String("method", method),
+					slog.String("path", path),
+					slog.Int("status", statusCode),
+					slog.String("latency", latency),
 				)
 			}
 		}
