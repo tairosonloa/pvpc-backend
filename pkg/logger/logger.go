@@ -57,22 +57,6 @@ func ServerErrorLoggerFromDefault() *log.Logger {
 	return slog.NewLogLogger(handler, slog.LevelError)
 }
 
-func buildHandlerOptions(opts *slog.HandlerOptions) *slog.HandlerOptions {
-	if opts == nil {
-		opts = &slog.HandlerOptions{}
-	}
-
-	if opts.Level == nil {
-		opts.Level = slog.LevelInfo
-	}
-
-	if opts.ReplaceAttr == nil {
-		opts.ReplaceAttr = replaceAttr
-	}
-
-	return opts
-}
-
 // Debug calls slog.Debug on the default logger.
 func Debug(msg string, args ...any) {
 	slog.Debug(msg, args...)

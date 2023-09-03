@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"runtime"
 	"strings"
-	"time"
 )
 
 type CustomTextHandler struct {
@@ -87,16 +86,24 @@ func addSourceToRecord(r *slog.Record) {
 	}
 }
 
-// replaceAttr updates the log output format in the following way:
-//
-// - Replaces the value of the slog.LevelKey attribute with the
-// string representation of the slog.Level.
-//
-// - Changes the time to do not include the milliseconds.
-//
-// - Adds only the source file and line number to the log record,
-// in a "file:line" format, when the slog.HandlerOptions.AddSource
-// option is true.
+func buildHandlerOptions(opts *slog.HandlerOptions) *slog.HandlerOptions {
+	if opts == nil {
+		opts = &slog.HandlerOptions{}
+	}
+
+	if opts.Level == nil {
+		opts.Level = slog.LevelInfo
+	}
+
+	if opts.ReplaceAttr == nil {
+		opts.ReplaceAttr = replaceAttr
+	}
+
+	return opts
+}
+
+// replaceAttr updates the log output format by replacing the value of the
+// slog.LevelKey attribute with the string representation of the slog.Level.
 func replaceAttr(_groups []string, a slog.Attr) slog.Attr {
 	if a.Key == slog.LevelKey {
 		level := a.Value.Any().(slog.Level)
@@ -106,9 +113,6 @@ func replaceAttr(_groups []string, a slog.Attr) slog.Attr {
 		}
 
 		a.Value = slog.StringValue(levelLabel)
-	} else if a.Key == slog.TimeKey {
-		time := a.Value.Any().(time.Time)
-		a.Value = slog.StringValue(time.Format("2006-01-02T15:04:05+07:00"))
 	}
 	return a
 }
