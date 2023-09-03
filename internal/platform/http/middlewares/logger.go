@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
 	"pvpc-backend/internal/platform/http/responses"
+	"pvpc-backend/pkg/logger"
 )
 
 type bodyLogWriter struct {
@@ -66,7 +66,7 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 				response := responses.APIErrorResponse{}
 				json.Unmarshal(blw.body.Bytes(), &response)
 
-				log.Error("Errored request",
+				logger.Error("Errored request",
 					"statusCode", statusCode,
 					"latency", latency,
 					"clientIP", clientIP,
@@ -76,7 +76,7 @@ func Logger(skipPaths []string) gin.HandlerFunc {
 					"errMsg", response.Message,
 				)
 			} else {
-				log.Info("Handled request",
+				logger.Info("Handled request",
 					"statusCode", statusCode,
 					"latency", latency,
 					"clientIP", clientIP,

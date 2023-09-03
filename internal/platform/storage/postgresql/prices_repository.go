@@ -7,11 +7,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
 	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/domain/errors"
+	"pvpc-backend/pkg/logger"
 )
 
 const (
@@ -65,7 +65,7 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 
 // Save implements the domain.PricesRepository interface.
 func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) error {
-	log.Debug("Saving Prices into database")
+	logger.Debug("Saving Prices into database")
 	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
 
 	dbPrices := make([]interface{}, len(prices))

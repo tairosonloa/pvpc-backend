@@ -8,10 +8,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"pvpc-backend/pkg/logger"
 )
 
 func TestMiddleware(t *testing.T) {
@@ -19,11 +20,10 @@ func TestMiddleware(t *testing.T) {
 	r, w, _ := os.Pipe()
 
 	// Setting up the Gin server
-	log.SetLevel(log.DebugLevel)
 	gin.SetMode(gin.TestMode)
 	engine := gin.New()
 	engine.Use(Logger([]string{}))
-	log.Default().SetOutput(w)
+	logger.SetTestLogger(w)
 
 	// Setting up the HTTP recorder and the request
 	httpRecorder := httptest.NewRecorder()

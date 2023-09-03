@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/gin-gonic/gin"
 
 	"pvpc-backend/internal/platform/http/handlers/health"
@@ -17,6 +16,7 @@ import (
 	"pvpc-backend/internal/platform/http/middlewares"
 	"pvpc-backend/internal/platform/storage/postgresql"
 	servicespkg "pvpc-backend/internal/services"
+	"pvpc-backend/pkg/logger"
 )
 
 type HttpServer struct {
@@ -80,18 +80,18 @@ func (s *HttpServer) registerRoutes() {
 
 func (s *HttpServer) Run() {
 	srv := &http.Server{
-		Addr:    s.address,
-		Handler: s.engine,
-		// TODO: add ErrorLog
+		Addr:     s.address,
+		Handler:  s.engine,
+		ErrorLog: logger.ServerErrorLoggerFromDefault(),
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
 	go func() {
-		log.Info("Server running", "address", s.address)
+		logger.Info("Server running", "address", s.address)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Unexpected server shutdown: %v", err)
+			logger.Fatal("Unexpected server shutdown", "err", err)
 		}
 	}()
 
@@ -100,13 +100,13 @@ func (s *HttpServer) Run() {
 	// Restore default behavior on the interrupt signal and notify user of shutdown.
 	stop()
 	fmt.Println() // Blank line for readability, so ^C is on its own line.
-	log.Infof("Shutting down gracefully, press Ctrl+C again to force")
+	logger.Info("Shutting down gracefully, press Ctrl+C again to force")
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		logger.Fatal("Server forced to shutdown", "err", err)
 	}
 
-	log.Info("Server exiting")
+	logger.Info("Server exiting")
 }

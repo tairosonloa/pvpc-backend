@@ -3,15 +3,15 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"log/slog"
 	"time"
 
-	"github.com/charmbracelet/log"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
 	server "pvpc-backend/internal/platform/http"
+	"pvpc-backend/pkg/logger"
 )
 
 type config struct {
@@ -38,7 +38,7 @@ func main() {
 
 	db, err := databaseConnection(cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbTimeout)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
+		logger.Fatal("Error connecting to database", "err", err)
 	}
 	defer db.Close()
 
@@ -47,22 +47,17 @@ func main() {
 }
 
 func configureLogger(level string) {
-	log.SetDefault(log.NewWithOptions(os.Stderr, log.Options{
-		Level:           log.ParseLevel(level),
-		Prefix:          "pvpc",
-		ReportTimestamp: true,
-		TimeFunction:    log.NowUTC,
-		TimeFormat:      "2006/01/02T15:04:05Z",
-	}))
+	loggerOpts := &slog.HandlerOptions{Level: logger.ParseLevel(level)}
+	logger.SetDefaultLoggerText(loggerOpts)
 }
 
 func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		logger.Fatal("Error loading .env file", "err", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
-		log.Fatalf("Error processing env config: %v", err)
+		logger.Fatal("Error processing env config", "err", err)
 	}
 	return cfg
 }

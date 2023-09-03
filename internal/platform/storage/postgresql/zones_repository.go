@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/huandu/go-sqlbuilder"
 
 	"pvpc-backend/internal/domain"
 	"pvpc-backend/internal/domain/errors"
+	"pvpc-backend/pkg/logger"
 )
 
 const (
@@ -37,7 +37,7 @@ func NewZonesRepository(db *sql.DB, dbTimeout time.Duration) *ZonesRepository {
 }
 
 func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
-	log.Debug("Getting all Zones from database")
+	logger.Debug("Getting all Zones from database")
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	query, _ := zoneSQL.SelectFrom(zonesTableName).Build()
@@ -70,7 +70,7 @@ func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
 }
 
 func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain.Zone, error) {
-	log.Debug("Getting Zone from database by ID", "id", id.String())
+	logger.Debug("Getting Zone from database by ID", "id", id.String())
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
@@ -99,7 +99,7 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 	return zone, nil
 }
 func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string) (domain.Zone, error) {
-	log.Debug("Getting Zone from database by externalID", "externalID", externalID)
+	logger.Debug("Getting Zone from database by externalID", "externalID", externalID)
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
