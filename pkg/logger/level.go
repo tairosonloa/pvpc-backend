@@ -15,7 +15,7 @@ var LevelNames = map[slog.Leveler]string{
 	LevelFatal: "FATAL",
 }
 
-func replaceAttr(groups []string, a slog.Attr) slog.Attr {
+func prettyPrintCustomLogLevels(_groups []string, a slog.Attr) slog.Attr {
 	if a.Key == slog.LevelKey {
 		level := a.Value.Any().(slog.Level)
 		levelLabel, exists := LevelNames[level]

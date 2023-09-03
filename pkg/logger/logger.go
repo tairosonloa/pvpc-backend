@@ -10,17 +10,27 @@ import (
 
 var handler slog.Handler
 
-// SetDefaultLoggerText creates a new default slog *slog.Logger
-// with a text handler and sets it as the default logger.
+// SetDefaultLoggerText creates a new slog.Logger with a custom text
+// handler and sets it as the default logger.
+//
+// The custom text handler is created by calling NewCustomTextHandler.
+// This handler will add to the log record, when calling a log function
+// with context, the values of the keys defined in constants.go that are
+// present in the given context.
 func SetDefaultLoggerText(opts *slog.HandlerOptions) {
-	handler = slog.NewTextHandler(os.Stdout, buildHandlerOptions(opts))
+	handler = NewCustomTextHandler(os.Stdout, buildHandlerOptions(opts))
 	slog.SetDefault(slog.New(handler))
 }
 
-// SetDefaultLoggerJson creates a new default slog *slog.Logger
-// with a json handler and sets it as the default logger.
-func SetDefaultLoggerJson(opts *slog.HandlerOptions) {
-	handler = slog.NewJSONHandler(os.Stdout, buildHandlerOptions(opts))
+// SetDefaultLoggerJSON creates a new slog.Logger with a custom text
+// handler and sets it as the default logger.
+//
+// The custom text handler is created by calling NewCustomJSONHandler.
+// This handler will add to the log record, when calling a log function
+// with context, the values of the keys defined in constants.go that are
+// present in the given context.
+func SetDefaultLoggerJSON(opts *slog.HandlerOptions) {
+	handler = NewCustomJSONHandler(os.Stdout, buildHandlerOptions(opts))
 	slog.SetDefault(slog.New(handler))
 }
 
@@ -56,9 +66,19 @@ func buildHandlerOptions(opts *slog.HandlerOptions) *slog.HandlerOptions {
 		opts.Level = slog.LevelInfo
 	}
 
-	opts.ReplaceAttr = replaceAttr
+	opts.ReplaceAttr = prettyPrintCustomLogLevels
 
 	return opts
+}
+
+// With calls slog.With on the default logger.
+func With(args ...any) *slog.Logger {
+	return slog.With(args...)
+}
+
+// Group calls slog.Group on the default logger.
+func Group(key string, args ...any) slog.Attr {
+	return slog.Group(key, args...)
 }
 
 // Debug calls slog.Debug on the default logger.

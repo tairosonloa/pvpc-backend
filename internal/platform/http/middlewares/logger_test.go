@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -36,8 +35,6 @@ func TestMiddleware(t *testing.T) {
 	// Getting the output recorded
 	require.NoError(t, w.Close())
 	got, _ := io.ReadAll(r)
-
-	fmt.Println("GOT:", string(got))
 
 	// Asserting the output contains some expected values
 	assert.Contains(t, string(got), "GET")

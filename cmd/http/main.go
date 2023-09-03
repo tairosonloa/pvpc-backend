@@ -48,7 +48,7 @@ func main() {
 
 func configureLogger(level string) {
 	loggerOpts := &slog.HandlerOptions{Level: logger.ParseLevel(level)}
-	logger.SetDefaultLoggerText(loggerOpts)
+	logger.SetDefaultLoggerJSON(loggerOpts)
 }
 
 func loadConfig() config {

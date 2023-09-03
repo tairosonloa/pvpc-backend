@@ -7,6 +7,7 @@ require (
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gkampitakis/go-snaps v0.4.8
+	github.com/google/uuid v1.3.0
 	github.com/huandu/go-sqlbuilder v1.22.0
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/joho/godotenv v1.5.1
