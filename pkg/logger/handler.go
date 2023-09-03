@@ -49,6 +49,10 @@ func (h *CustomJSONHandler) Handle(ctx context.Context, r slog.Record) error {
 func addContextInfoToRecord(ctx context.Context, r *slog.Record) {
 	reqID := ctx.Value(ContextKeyRequestID)
 	if value, ok := reqID.(string); ok {
-		r.AddAttrs(slog.String("req_id", value))
+		r.AddAttrs(slog.String("reqID", value))
+	}
+	contextErr := ctx.Err()
+	if contextErr != nil {
+		r.AddAttrs(slog.String("contextErr", contextErr.Error()))
 	}
 }

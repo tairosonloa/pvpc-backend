@@ -65,7 +65,7 @@ func NewPricesRepository(db *sql.DB, dbTimeout time.Duration) *PricesRepository 
 
 // Save implements the domain.PricesRepository interface.
 func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) error {
-	logger.Debug("Saving Prices into database")
+	logger.DebugContext(ctx, "Saving Prices into database")
 	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
 
 	dbPrices := make([]interface{}, len(prices))

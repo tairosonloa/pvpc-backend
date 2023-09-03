@@ -34,7 +34,7 @@ func SetDefaultLoggerJSON(opts *slog.HandlerOptions) {
 	slog.SetDefault(slog.New(handler))
 }
 
-// SetTestLogger creates a new default slog *slog.Logger with a text
+// SetTestLogger creates a new slog.Logger with a CustomTextHandler
 // handler that logs at LevelDebug and sets it as the default logger.
 func SetTestLogger(output io.Writer) {
 	if output == nil {
@@ -69,16 +69,6 @@ func buildHandlerOptions(opts *slog.HandlerOptions) *slog.HandlerOptions {
 	opts.ReplaceAttr = prettyPrintCustomLogLevels
 
 	return opts
-}
-
-// With calls slog.With on the default logger.
-func With(args ...any) *slog.Logger {
-	return slog.With(args...)
-}
-
-// Group calls slog.Group on the default logger.
-func Group(key string, args ...any) slog.Attr {
-	return slog.Group(key, args...)
 }
 
 // Debug calls slog.Debug on the default logger.
@@ -131,4 +121,14 @@ func Fatal(msg string, args ...any) {
 func FatalContext(ctx context.Context, msg string, args ...any) {
 	slog.Log(ctx, LevelFatal, msg, args...)
 	os.Exit(1)
+}
+
+// Log calls slog.Log on the default logger.
+func Log(ctx context.Context, level slog.Level, msg string, args ...any) {
+	slog.Log(ctx, level, msg, args...)
+}
+
+// LogAttrs calls slog.LogAttrs on the default logger.
+func LogAttrs(ctx context.Context, level slog.Level, msg string, attrs ...slog.Attr) {
+	slog.LogAttrs(ctx, level, msg, attrs...)
 }

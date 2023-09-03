@@ -37,7 +37,7 @@ func NewZonesRepository(db *sql.DB, dbTimeout time.Duration) *ZonesRepository {
 }
 
 func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
-	logger.Debug("Getting all Zones from database")
+	logger.DebugContext(ctx, "Getting all Zones from database")
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	query, _ := zoneSQL.SelectFrom(zonesTableName).Build()
@@ -70,7 +70,7 @@ func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
 }
 
 func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain.Zone, error) {
-	logger.Debug("Getting Zone from database by ID", "id", id.String())
+	logger.DebugContext(ctx, "Getting Zone from database by ID", "id", id.String())
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
@@ -99,7 +99,7 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 	return zone, nil
 }
 func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string) (domain.Zone, error) {
-	logger.Debug("Getting Zone from database by externalID", "externalID", externalID)
+	logger.DebugContext(ctx, "Getting Zone from database by externalID", "externalID", externalID)
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
