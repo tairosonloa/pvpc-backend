@@ -15,19 +15,6 @@ var LevelNames = map[slog.Leveler]string{
 	LevelFatal: "FATAL",
 }
 
-func prettyPrintCustomLogLevels(_groups []string, a slog.Attr) slog.Attr {
-	if a.Key == slog.LevelKey {
-		level := a.Value.Any().(slog.Level)
-		levelLabel, exists := LevelNames[level]
-		if !exists {
-			levelLabel = level.String()
-		}
-
-		a.Value = slog.StringValue(levelLabel)
-	}
-	return a
-}
-
 // ParseLevel parses a string level into a slog.Level.
 func ParseLevel(level string) slog.Level {
 	switch strings.ToUpper(level) {

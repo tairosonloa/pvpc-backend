@@ -66,7 +66,9 @@ func buildHandlerOptions(opts *slog.HandlerOptions) *slog.HandlerOptions {
 		opts.Level = slog.LevelInfo
 	}
 
-	opts.ReplaceAttr = prettyPrintCustomLogLevels
+	if opts.ReplaceAttr == nil {
+		opts.ReplaceAttr = replaceAttr
+	}
 
 	return opts
 }
