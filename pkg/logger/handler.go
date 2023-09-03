@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"runtime"
 	"strings"
+	"time"
 )
 
 type CustomTextHandler struct {
@@ -26,7 +27,7 @@ type CustomJSONHandler struct {
 func NewCustomTextHandler(w io.Writer, opts *slog.HandlerOptions) *CustomTextHandler {
 	// Disable the slog.TextHandler addSource behavior if set,
 	// because it overlaps with the custom addSource behavior
-	addSource := opts.AddSource
+	addSource := opts.AddSource || opts.Level == slog.LevelDebug
 	opts.AddSource = false
 	return &CustomTextHandler{
 		TextHandler: *slog.NewTextHandler(w, opts),
@@ -41,7 +42,7 @@ func NewCustomTextHandler(w io.Writer, opts *slog.HandlerOptions) *CustomTextHan
 func NewCustomJSONHandler(w io.Writer, opts *slog.HandlerOptions) *CustomJSONHandler {
 	// Disable the slog.JSONHandler addSource behavior if set,
 	// because it overlaps with the custom addSource behavior
-	addSource := opts.AddSource
+	addSource := opts.AddSource || opts.Level == slog.LevelDebug
 	opts.AddSource = false
 	return &CustomJSONHandler{
 		JSONHandler: *slog.NewJSONHandler(w, opts),
@@ -105,6 +106,9 @@ func replaceAttr(_groups []string, a slog.Attr) slog.Attr {
 		}
 
 		a.Value = slog.StringValue(levelLabel)
+	} else if a.Key == slog.TimeKey {
+		time := a.Value.Any().(time.Time)
+		a.Value = slog.StringValue(time.Format("2006-01-02T15:04:05+07:00"))
 	}
 	return a
 }
