@@ -21,7 +21,19 @@ type domainError struct {
 }
 
 func (e domainError) Error() string {
-	return e.error.Error()
+	return fmt.Sprintf("%s: %s", e.errorCode, e.error.Error())
+}
+
+func ErrorWithoutCode(err error) string {
+	if err == nil {
+		return ""
+	}
+
+	if e, ok := err.(domainError); ok {
+		return e.error.Error()
+	}
+
+	return err.Error()
 }
 
 func Unwrap(err error) error {

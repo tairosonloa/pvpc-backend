@@ -1,7 +1,7 @@
 with-expecter: true
 quiet: false
 packages:
-  pvpc-backend/internal:
+  pvpc-backend/internal/domain:
     config:
       mockname: "{{.InterfaceName}}"
       filename: "{{.InterfaceNameSnake}}.go"

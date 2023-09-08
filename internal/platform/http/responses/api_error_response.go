@@ -19,7 +19,7 @@ func NewAPIErrorResponse(err error) (int, APIErrorResponse) {
 
 	return statusCode, APIErrorResponse{
 		ErrorCode:  errorCode,
-		Message:    err.Error(),
+		Message:    errors.ErrorWithoutCode(err),
 		StatusCode: statusCode,
 	}
 }

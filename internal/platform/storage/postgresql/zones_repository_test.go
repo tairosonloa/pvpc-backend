@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"pvpc-backend/internal/domain"
@@ -27,8 +26,8 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 
 		_, err = repo.GetAll(context.Background())
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.Error(t, err)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.Error(t, err)
 	})
 
 	t.Run("when there are zones in the database, returns a slice of domain.Zones", func(t *testing.T) {
@@ -56,11 +55,11 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		expected2, err := domain.NewZone(domain.ZoneDto{ID: id2, ExternalID: externalID2, Name: name2})
 		require.NoError(t, err)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.NoError(t, err)
-		assert.Len(t, result, 2)
-		assert.Equal(t, expected1, result[0])
-		assert.Equal(t, expected2, result[1])
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+		require.Len(t, result, 2)
+		require.Equal(t, expected1, result[0])
+		require.Equal(t, expected2, result[1])
 	})
 
 	t.Run("when there are NOT zones in the database, returns an empty slice of domain.Zones", func(t *testing.T) {
@@ -77,9 +76,9 @@ func Test_ZonesRepository_GetAll(t *testing.T) {
 		result, err := repo.GetAll(context.Background())
 		require.NoError(t, err)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.NoError(t, err)
-		assert.Len(t, result, 0)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+		require.Len(t, result, 0)
 	})
 }
 
@@ -101,8 +100,8 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 		_, err = repo.GetByID(context.Background(), zoneID)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.Error(t, err)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.Error(t, err)
 	})
 
 	t.Run("when db returns no error and zone is found, repository returns a domain.Zone", func(t *testing.T) {
@@ -128,9 +127,9 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 		expected, err := domain.NewZone(domain.ZoneDto{ID: id, ExternalID: externalID, Name: name})
 		require.NoError(t, err)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.NoError(t, err)
-		assert.Equal(t, expected, result)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+		require.Equal(t, expected, result)
 
 	})
 
@@ -152,10 +151,10 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 		result, err := repo.GetByID(context.Background(), zoneID)
 
-		assert.Error(t, err)
-		assert.Equal(t, dErrors.ZoneNotFound, dErrors.Code(err))
-		assert.Equal(t, domain.Zone{}, result)
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, dErrors.ZoneNotFound, dErrors.Code(err))
+		require.Equal(t, domain.Zone{}, result)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }
 
@@ -175,8 +174,8 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 
 		_, err = repo.GetByExternalID(context.Background(), zoneExternalID)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.Error(t, err)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.Error(t, err)
 	})
 
 	t.Run("when db returns no error, repository returns a domain.Zone", func(t *testing.T) {
@@ -200,9 +199,9 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		expected, err := domain.NewZone(domain.ZoneDto{ID: id, ExternalID: externalID, Name: name})
 		require.NoError(t, err)
 
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
-		assert.NoError(t, err)
-		assert.Equal(t, expected, result)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+		require.Equal(t, expected, result)
 	})
 
 	t.Run("when db returns no error but zone is NOT found, repository returns an empty domain.Zone and error", func(t *testing.T) {
@@ -220,9 +219,9 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 
 		result, err := repo.GetByExternalID(context.Background(), externalID)
 
-		assert.Error(t, err)
-		assert.Equal(t, dErrors.ZoneNotFound, dErrors.Code(err))
-		assert.Equal(t, domain.Zone{}, result)
-		assert.NoError(t, sqlMock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, dErrors.ZoneNotFound, dErrors.Code(err))
+		require.Equal(t, domain.Zone{}, result)
+		require.NoError(t, sqlMock.ExpectationsWereMet())
 	})
 }

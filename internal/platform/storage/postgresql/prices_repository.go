@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -110,15 +111,17 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 
 	if date == nil {
 		if zoneID == nil {
-			query = pricesSQL.SelectFrom(pricesTableName).Distinct().SQL("ON zone_id").OrderBy("date").Desc()
+			// query = pricesSQL.SelectFrom(pricesTableName).Distinct().SQL("ON zone_id").OrderBy("date").Desc()
+			query = sb.Select("DISTINCT ON (zone_id) id", "date", "zone_id", "values").From(pricesTableName).OrderBy("date").Desc()
 		} else {
-			query = query.Where(sb.Equal("zone_id", zoneID.String())).OrderBy("date").Desc().Limit(1)
+			query = query.Where((fmt.Sprintf("zone_id = %s", zoneID.String()))).OrderBy("date").Desc().Limit(1)
 		}
 	} else {
 		query = query.Where(sb.Equal("date", date.Format("2006-01-02")))
 	}
 
 	querySQL, args := query.Build()
+	// fmt.Println("querySQL", querySQL, "args", args)
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -162,7 +165,7 @@ func mapPricesSchemaToDomain(priceSchema pricesSchema) (domain.Prices, error) {
 	return domain.NewPrices(domain.PricesDto{
 		ID:     priceSchema.ID,
 		Date:   priceSchema.Date,
-		Zone:   domain.ZoneDto{},
+		Zone:   domain.ZoneDto{ID: priceSchema.ZoneID},
 		Values: hourlyPrices,
 	})
 }
