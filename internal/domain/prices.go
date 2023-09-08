@@ -80,6 +80,14 @@ type PricesRepository interface {
 	Query(ctx context.Context, zoneID *ZoneID, date *time.Time) ([]Prices, error)
 }
 
+// PricesProvider defines the expected behavior from a prices provider.
+// At the end, it's an adapter over the REE APIs.
+type PricesProvider interface {
+	// FetchPVPCPrices fetches the PVPC prices for the given zones and date.
+	// If the zones slice is empty or nil, it returns nil.
+	FetchPVPCPrices(ctx context.Context, zones []Zone, date time.Time) ([]Prices, error)
+}
+
 // NewPrices creates a new Prices struct.
 func NewPrices(pricesDto PricesDto) (Prices, error) {
 	idVO, err := NewPricesID(pricesDto.ID)

@@ -2,21 +2,27 @@ package services
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"pvpc-backend/internal/domain"
+	"pvpc-backend/pkg/logger"
 )
 
 // PricesService is the domain service that manages operations over Price's.
 type PricesService struct {
+	pricesProvider   domain.PricesProvider
 	pricesRepository domain.PricesRepository
 	zonesRepository  domain.ZonesRepository
 }
 
 // NewPricesService returns a new ListingService.
-func NewPricesService(pricesRepository domain.PricesRepository, zonesRepository domain.ZonesRepository) PricesService {
+func NewPricesService(
+	pricesProvider domain.PricesProvider,
+	pricesRepository domain.PricesRepository,
+	zonesRepository domain.ZonesRepository,
+) PricesService {
 	return PricesService{
+		pricesProvider:   pricesProvider,
 		pricesRepository: pricesRepository,
 		zonesRepository:  zonesRepository,
 	}
@@ -49,11 +55,26 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) error {
 		}
 	}
 
-	// TODO: Fetch prices from REE
-	// function that receives zonesToFetchToday and zonesToFetchTomorrow and returns a slice of prices
+	todayCh := make(chan []domain.Prices)
+	tomorrowCh := make(chan []domain.Prices)
 
-	// TODO: Store prices in database
-	// Store the prices slice returned by the previous function into database
+	go func() {
+		todayPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
+		if err != nil {
+			todayCh <- nil
+			logger.ErrorContext(ctx, "error fetching today prices", "err", err)
+		}
+		todayCh <- todayPrices
+	}()
+	go func() {
+		tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.Add(24*time.Hour))
+		if err != nil {
+			tomorrowCh <- nil
+			logger.ErrorContext(ctx, "error fetching tomorrow prices", "err", err)
+		}
+		tomorrowCh <- tomorrowPrices
+	}()
 
-	return errors.New("not implemented")
+	pricesToStore := append(<-todayCh, <-tomorrowCh...)
+	return s.pricesRepository.Save(ctx, pricesToStore)
 }
