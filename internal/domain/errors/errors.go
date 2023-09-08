@@ -9,6 +9,7 @@ type ErrorCode string
 
 const (
 	InvalidPricesID  ErrorCode = "INVALID_PRICES_ID"
+	InvalidTime      ErrorCode = "INVALID_TIME"
 	InvalidZoneID    ErrorCode = "INVALID_PRICES_ZONE_ID"
 	PersistenceError ErrorCode = "PERSISTENCE_ERROR"
 	ZoneNotFound     ErrorCode = "PRICES_ZONE_NOT_FOUND"

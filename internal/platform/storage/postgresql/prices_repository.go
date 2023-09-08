@@ -74,14 +74,14 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 		values := make([]hourlyPriceSchema, len(p.Values()))
 		for j, v := range p.Values() {
 			values[j] = hourlyPriceSchema{
-				Datetime: v.Datetime(),
+				Datetime: v.Datetime().Format(time.RFC3339),
 				Price:    v.Value(),
 			}
 		}
 
 		dbPrices[i] = pricesSchema{
 			ID:           p.ID().String(),
-			Date:         p.Date(),
+			Date:         p.Date().Format(time.RFC3339),
 			ZoneID:       p.Zone().ID().String(),
 			HourlyPrices: values,
 		}
@@ -98,4 +98,71 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 	}
 
 	return nil
+}
+
+// Query implements the domain.PricesRepository interface.
+func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, date *time.Time) ([]domain.Prices, error) {
+	logger.DebugContext(ctx, "Getting all Zones from database")
+	sb := sqlbuilder.NewSelectBuilder()
+	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
+
+	query := pricesSQL.SelectFrom(pricesTableName)
+
+	if date == nil {
+		if zoneID == nil {
+			query = pricesSQL.SelectFrom(pricesTableName).Distinct().SQL("ON zone_id").OrderBy("date").Desc()
+		} else {
+			query = query.Where(sb.Equal("zone_id", zoneID.String())).OrderBy("date").Desc().Limit(1)
+		}
+	} else {
+		query = query.Where(sb.Equal("date", date.Format("2006-01-02")))
+	}
+
+	querySQL, args := query.Build()
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	rows, err := r.db.QueryContext(ctxTimeout, querySQL, args...)
+	if err != nil {
+		return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error querying Prices from database")
+	}
+	defer rows.Close()
+
+	prices := make([]domain.Prices, 0, 5)
+	for rows.Next() {
+		var dbPrices pricesSchema
+		err := rows.Scan(pricesSQL.Addr(&dbPrices)...)
+		if err != nil {
+			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Prices from database to schema")
+		}
+
+		domainPrices, err := mapPricesSchemaToDomain(dbPrices)
+		if err != nil {
+			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Prices from schema to domain")
+		}
+		prices = append(prices, domainPrices)
+	}
+
+	return prices, nil
+}
+
+func mapPricesSchemaToDomain(priceSchema pricesSchema) (domain.Prices, error) {
+	var hourlyPrices []domain.HourlyPriceDto
+
+	for _, v := range priceSchema.HourlyPrices {
+		hourlyPrice := domain.HourlyPriceDto{
+			Datetime: v.Datetime,
+			Value:    v.Price,
+		}
+
+		hourlyPrices = append(hourlyPrices, hourlyPrice)
+	}
+
+	return domain.NewPrices(domain.PricesDto{
+		ID:     priceSchema.ID,
+		Date:   priceSchema.Date,
+		Zone:   domain.ZoneDto{},
+		Values: hourlyPrices,
+	})
 }

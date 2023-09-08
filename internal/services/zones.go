@@ -6,8 +6,7 @@ import (
 	"pvpc-backend/internal/domain"
 )
 
-// ZonesService is the domain service that manages operations
-// over Zone's.
+// ZonesService is the domain service that manages operations over Zone's.
 type ZonesService struct {
 	zonesRepository domain.ZonesRepository
 }

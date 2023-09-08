@@ -16,8 +16,8 @@ import (
 func Test_PricesRepository_Save(t *testing.T) {
 
 	t.Run("when db returns error, repository returns error", func(t *testing.T) {
-		id1, date1 := "ZON-2023-08-10", "2023-08-10"
-		id2, date2 := "ZON-2023-08-10", "2023-08-10"
+		id1, date1 := "ZON-2023-08-10", "2023-08-10T00:00:00+02:00"
+		id2, date2 := "ZON-2023-08-10", "2023-08-10T00:00:00+02:00"
 		zoneID, zoneExternalID, zoneName := "ZON", "123", "Test zone"
 		datetime, value := "2023-08-10T00:00:00+02:00", float32(0.1234)
 
@@ -56,8 +56,8 @@ func Test_PricesRepository_Save(t *testing.T) {
 	})
 
 	t.Run("when everything goes OK, repository returns no error", func(t *testing.T) {
-		id1, date1 := "ZON-2023-08-10", "2023-08-10"
-		id2, date2 := "ZON-2023-08-10", "2023-08-10"
+		id1, date1 := "ZON-2023-08-10", "2023-08-10T00:00:00+02:00"
+		id2, date2 := "ZON-2023-08-10", "2023-08-10T00:00:00+02:00"
 		zoneID, zoneExternalID, zoneName := "ZON", "123", "Test zone"
 		datetime, value := "2023-08-10T00:00:00+02:00", float32(0.1234)
 
