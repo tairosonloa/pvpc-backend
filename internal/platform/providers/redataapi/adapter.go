@@ -38,9 +38,10 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 
 	for _, zone := range zones {
 		resBody := new(fetchPVPCPricesResponse)
-		_, err := r.client.Path(pvpcPricesEndpoint).
-			QueryStruct(fetchPVPCPricesRequest{StartDate: startDate, EndDate: endDate, TimeTrunc: "hour", GeoIds: zone.ExternalID()}).
-			ReceiveSuccess(resBody)
+		query := fetchPVPCPricesRequest{StartDate: startDate, EndDate: endDate, TimeTrunc: "hour", GeoIds: zone.ExternalID()}
+
+		logger.DebugContext(ctx, "fetching PVPC prices from REE", "zone", zone.Name(), "query", query)
+		_, err := r.client.Path(pvpcPricesEndpoint).QueryStruct(query).ReceiveSuccess(resBody)
 
 		if err != nil {
 			logger.ErrorContext(ctx, "error fetching PVPC prices from REE", "err", err, "zone", zone.Name())
