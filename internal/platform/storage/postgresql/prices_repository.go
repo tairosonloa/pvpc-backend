@@ -104,24 +104,30 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 // Query implements the domain.PricesRepository interface.
 func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, date *time.Time) ([]domain.Prices, error) {
 	logger.DebugContext(ctx, "Getting all Zones from database")
-	sb := sqlbuilder.NewSelectBuilder()
 	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
 
-	query := pricesSQL.SelectFrom(pricesTableName)
+	query := sqlbuilder.NewSelectBuilder().Select("prices.id", "prices.date", "prices.zone_id", "prices.values", "zones.external_id", "zones.name").
+		From(pricesTableName).Join(zonesTableName, "prices.zone_id = zones.id")
 
 	if date == nil {
 		if zoneID == nil {
-			// query = pricesSQL.SelectFrom(pricesTableName).Distinct().SQL("ON zone_id").OrderBy("date").Desc()
-			query = sb.Select("DISTINCT ON (zone_id) id", "date", "zone_id", "values").From(pricesTableName).OrderBy("date").Desc()
+			query = sqlbuilder.NewSelectBuilder().
+				Select("DISTINCT ON (prices.zone_id) prices.id", "prices.date", "prices.zone_id", "prices.values", "zones.external_id", "zones.name").
+				From(pricesTableName).Join(zonesTableName, "prices.zone_id = zones.id").
+				OrderBy("date").Desc()
 		} else {
 			query = query.Where((fmt.Sprintf("zone_id = %s", zoneID.String()))).OrderBy("date").Desc().Limit(1)
 		}
 	} else {
-		query = query.Where(sb.Equal("date", date.Format("2006-01-02")))
+		if zoneID == nil {
+			query = query.Where(query.Equal("date", date.Format("2006-01-02")))
+		} else {
+			query = query.Where(query.And(query.Equal("date", date.Format("2006-01-02"))), fmt.Sprintf("zone_id = %s", zoneID.String()))
+		}
 	}
 
 	querySQL, args := query.Build()
-	// fmt.Println("querySQL", querySQL, "args", args)
+	fmt.Println("querySQL", querySQL, "args", args)
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -135,12 +141,14 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 	prices := make([]domain.Prices, 0, 5)
 	for rows.Next() {
 		var dbPrices pricesSchema
-		err := rows.Scan(pricesSQL.Addr(&dbPrices)...)
+		var zoneExternalID, zoneName string
+		fields := append(pricesSQL.Addr(&dbPrices), &zoneExternalID, &zoneName)
+		err := rows.Scan(fields...)
 		if err != nil {
 			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Prices from database to schema")
 		}
 
-		domainPrices, err := mapPricesSchemaToDomain(dbPrices)
+		domainPrices, err := mapPricesSchemaToDomain(dbPrices, zoneExternalID, zoneName)
 		if err != nil {
 			return nil, errors.WrapIntoDomainError(err, errors.PersistenceError, "error mapping Prices from schema to domain")
 		}
@@ -150,7 +158,7 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 	return prices, nil
 }
 
-func mapPricesSchemaToDomain(priceSchema pricesSchema) (domain.Prices, error) {
+func mapPricesSchemaToDomain(priceSchema pricesSchema, zoneExternalID, zoneName string) (domain.Prices, error) {
 	var hourlyPrices []domain.HourlyPriceDto
 
 	for _, v := range priceSchema.HourlyPrices {
@@ -165,7 +173,7 @@ func mapPricesSchemaToDomain(priceSchema pricesSchema) (domain.Prices, error) {
 	return domain.NewPrices(domain.PricesDto{
 		ID:     priceSchema.ID,
 		Date:   priceSchema.Date,
-		Zone:   domain.ZoneDto{ID: priceSchema.ZoneID},
+		Zone:   domain.ZoneDto{ID: priceSchema.ZoneID, ExternalID: zoneExternalID, Name: zoneName},
 		Values: hourlyPrices,
 	})
 }

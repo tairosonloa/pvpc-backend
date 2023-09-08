@@ -103,7 +103,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		sqlMock.ExpectQuery(
-			"SELECT DISTINCT ON (zone_id) id, date, zone_id, values FROM prices ORDER BY date DESC").
+			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY date DESC").
 			WillReturnError(errors.New("mock-error"))
 
 		repo := NewPricesRepository(db, 1*time.Millisecond)
@@ -114,8 +114,9 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.Error(t, err)
 	})
 
-	t.Run("queries by zone ID", func(t *testing.T) {
+	t.Run("queries latest", func(t *testing.T) {
 		date := "2023-08-10T00:00:00+02:00"
+		externalZoneID, zoneName := "123", "Test zone"
 
 		id, err := domain.NewPricesID("ZON-2023-08-10")
 		require.NoError(t, err)
@@ -126,11 +127,50 @@ func Test_PricesRepository_Query(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
-		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values"}).
-			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}})
+		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
-			"SELECT prices.id, prices.date, prices.zone_id, prices.values FROM prices WHERE zone_id = ZON ORDER BY date DESC LIMIT 1").
+			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY date DESC").
+			WillReturnRows(rows)
+
+		repo := NewPricesRepository(db, 1*time.Millisecond)
+
+		result, err := repo.Query(context.Background(), nil, nil)
+		require.NoError(t, err)
+
+		prices, err := domain.NewPrices(domain.PricesDto{
+			ID:     id.String(),
+			Date:   date,
+			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+		)
+		require.NoError(t, err)
+
+		require.Equal(t, []domain.Prices{prices}, result)
+
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+	})
+
+	t.Run("queries by zone ID", func(t *testing.T) {
+		date := "2023-08-10T00:00:00+02:00"
+		externalZoneID, zoneName := "123", "Test zone"
+
+		id, err := domain.NewPricesID("ZON-2023-08-10")
+		require.NoError(t, err)
+
+		zoneID, err := domain.NewZoneID("ZON")
+		require.NoError(t, err)
+
+		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+
+		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+
+		sqlMock.ExpectQuery(
+			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE zone_id = ZON ORDER BY date DESC LIMIT 1").
 			WillReturnRows(rows)
 
 		repo := NewPricesRepository(db, 1*time.Millisecond)
@@ -138,7 +178,98 @@ func Test_PricesRepository_Query(t *testing.T) {
 		result, err := repo.Query(context.Background(), &zoneID, nil)
 		require.NoError(t, err)
 
-		prices, err := domain.NewPrices(domain.PricesDto{ID: id.String(), Date: date, Zone: domain.ZoneDto{ID: zoneID.String()}, Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}})
+		prices, err := domain.NewPrices(domain.PricesDto{
+			ID:     id.String(),
+			Date:   date,
+			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+		)
+		require.NoError(t, err)
+
+		require.Equal(t, []domain.Prices{prices}, result)
+
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+	})
+
+	t.Run("queries by date", func(t *testing.T) {
+		date := "2023-08-10T00:00:00+02:00"
+		externalZoneID, zoneName := "123", "Test zone"
+
+		id, err := domain.NewPricesID("ZON-2023-08-10")
+		require.NoError(t, err)
+
+		zoneID, err := domain.NewZoneID("ZON")
+		require.NoError(t, err)
+
+		dateTime, err := time.Parse(time.RFC3339, date)
+		require.NoError(t, err)
+
+		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+
+		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+
+		sqlMock.ExpectQuery(
+			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE date = ?").
+			WithArgs(dateTime.Format("2006-01-02")).
+			WillReturnRows(rows)
+
+		repo := NewPricesRepository(db, 1*time.Millisecond)
+
+		result, err := repo.Query(context.Background(), nil, &dateTime)
+		require.NoError(t, err)
+
+		prices, err := domain.NewPrices(domain.PricesDto{
+			ID:     id.String(),
+			Date:   date,
+			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+		)
+		require.NoError(t, err)
+
+		require.Equal(t, []domain.Prices{prices}, result)
+
+		require.NoError(t, sqlMock.ExpectationsWereMet())
+		require.NoError(t, err)
+	})
+
+	t.Run("queries by zoneId and date", func(t *testing.T) {
+		date := "2023-08-10T00:00:00+02:00"
+		externalZoneID, zoneName := "123", "Test zone"
+
+		id, err := domain.NewPricesID("ZON-2023-08-10")
+		require.NoError(t, err)
+
+		zoneID, err := domain.NewZoneID("ZON")
+		require.NoError(t, err)
+
+		dateTime, err := time.Parse(time.RFC3339, date)
+		require.NoError(t, err)
+
+		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+
+		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+
+		sqlMock.ExpectQuery(
+			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE (date = ?) AND zone_id = ZON").
+			WithArgs(dateTime.Format("2006-01-02")).
+			WillReturnRows(rows)
+
+		repo := NewPricesRepository(db, 1*time.Millisecond)
+
+		result, err := repo.Query(context.Background(), &zoneID, &dateTime)
+		require.NoError(t, err)
+
+		prices, err := domain.NewPrices(domain.PricesDto{
+			ID:     id.String(),
+			Date:   date,
+			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+		)
 		require.NoError(t, err)
 
 		require.Equal(t, []domain.Prices{prices}, result)
