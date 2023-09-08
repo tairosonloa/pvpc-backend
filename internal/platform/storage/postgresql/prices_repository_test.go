@@ -103,7 +103,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		sqlMock.ExpectQuery(
-			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY date DESC").
+			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY prices.zone_id, prices.date DESC").
 			WillReturnError(errors.New("mock-error"))
 
 		repo := NewPricesRepository(db, 1*time.Millisecond)
@@ -131,7 +131,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
-			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY date DESC").
+			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY prices.zone_id, prices.date DESC").
 			WillReturnRows(rows)
 
 		repo := NewPricesRepository(db, 1*time.Millisecond)

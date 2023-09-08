@@ -114,7 +114,7 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 			query = sqlbuilder.NewSelectBuilder().
 				Select("DISTINCT ON (prices.zone_id) prices.id", "prices.date", "prices.zone_id", "prices.values", "zones.external_id", "zones.name").
 				From(pricesTableName).Join(zonesTableName, "prices.zone_id = zones.id").
-				OrderBy("date").Desc()
+				OrderBy("prices.zone_id", "prices.date").Desc()
 		} else {
 			query = query.Where((fmt.Sprintf("zone_id = %s", zoneID.String()))).OrderBy("date").Desc().Limit(1)
 		}

@@ -7,9 +7,9 @@ import (
 )
 
 type APIErrorResponse struct {
-	ErrorCode  string `json:"error_code"`
+	ErrorCode  string `json:"errorCode"`
 	Message    string `json:"message"`
-	StatusCode int    `json:"status_code"`
+	StatusCode int    `json:"statusCode"`
 }
 
 func NewAPIErrorResponse(err error) (int, APIErrorResponse) {

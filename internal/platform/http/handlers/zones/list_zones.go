@@ -16,15 +16,15 @@ type response struct {
 }
 
 type zonesResponse struct {
-	ID         string `json:"id"`
-	ExternalID string `json:"external_id"`
+	ID         string `json:"ID"`
+	ExternalID string `json:"externalID"`
 	Name       string `json:"name"`
 }
 
 // ListZonesHandlerV1 returns a gin.HandlerFunc to list prices zones.
-func ListZonesHandlerV1(listingService services.ZonesService) gin.HandlerFunc {
+func ListZonesHandlerV1(zonesService services.ZonesService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		zones, err := listingService.ListZones(ctx)
+		zones, err := zonesService.ListZones(ctx)
 		if err != nil {
 			statusCode, response := responses.NewAPIErrorResponse(err)
 			ctx.JSON(statusCode, response)
