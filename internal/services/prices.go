@@ -82,6 +82,10 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 	}()
 
 	pricesToStore := append(<-todayCh, <-tomorrowCh...)
+	if len(pricesToStore) == 0 {
+		return nil, nil
+	}
+
 	err = s.pricesRepository.Save(ctx, pricesToStore)
 
 	if err != nil {
