@@ -92,7 +92,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = $1").
 			WithArgs(zoneIDString).
 			WillReturnError(errors.New("mock-error"))
 
@@ -115,7 +115,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "external_id", "name"}).
 			AddRow(id, externalID, name)
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = $1").
 			WithArgs(id).
 			WillReturnRows(rows)
 
@@ -143,7 +143,7 @@ func Test_ZonesRepository_GetByID(t *testing.T) {
 
 		rows := sqlmock.NewRows([]string{"id", "external_id", "name"})
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE id = $1").
 			WithArgs(id).
 			WillReturnRows(rows)
 
@@ -166,7 +166,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		require.NoError(t, err)
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = $1").
 			WithArgs(zoneExternalID).
 			WillReturnError(errors.New("mock-error"))
 
@@ -187,7 +187,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "external_id", "name"}).
 			AddRow(id, externalID, name)
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = $1").
 			WithArgs(externalID).
 			WillReturnRows(rows)
 
@@ -211,7 +211,7 @@ func Test_ZonesRepository_GetByExternalID(t *testing.T) {
 
 		rows := sqlmock.NewRows([]string{"id", "external_id", "name"})
 
-		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = ?").
+		sqlMock.ExpectQuery("SELECT zones.id, zones.external_id, zones.name FROM zones WHERE external_id = $1").
 			WithArgs(externalID).
 			WillReturnRows(rows)
 

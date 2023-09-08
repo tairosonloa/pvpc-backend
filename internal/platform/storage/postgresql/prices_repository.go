@@ -82,13 +82,13 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 
 		dbPrices[i] = pricesSchema{
 			ID:           p.ID().String(),
-			Date:         p.Date().Format(time.RFC3339),
+			Date:         p.Date().Format("2006-01-02"),
 			ZoneID:       p.Zone().ID().String(),
 			HourlyPrices: values,
 		}
 	}
 
-	query, args := pricesSQL.InsertInto(pricesTableName, dbPrices...).Build()
+	query, args := sqlbuilder.WithFlavor(pricesSQL.InsertInto(pricesTableName, dbPrices...), sqlbuilder.PostgreSQL).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -126,8 +126,7 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 		}
 	}
 
-	querySQL, args := query.Build()
-	fmt.Println("querySQL", querySQL, "args", args)
+	querySQL, args := sqlbuilder.WithFlavor(query, sqlbuilder.PostgreSQL).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()

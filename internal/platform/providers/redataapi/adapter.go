@@ -2,7 +2,6 @@ package redataapi
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -33,24 +32,18 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 	}
 
 	prices := make([]domain.Prices, 0, len(zones))
-	startDate := date.Format("2006-01-02T00:00")
-	endDate := date.Format("2006-01-02T23:59")
+	dateString := date.Format("2006-01-02")
+	startDate := dateString + "T00:00"
+	endDate := dateString + "T23:59"
 
 	for _, zone := range zones {
-		req, err := r.client.Path(pvpcPricesEndpoint).
+		resBody := new(fetchPVPCPricesResponse)
+		_, err := r.client.Path(pvpcPricesEndpoint).
 			QueryStruct(fetchPVPCPricesRequest{StartDate: startDate, EndDate: endDate, TimeTrunc: "hour", GeoIds: zone.ExternalID()}).
-			Request()
+			ReceiveSuccess(resBody)
 
 		if err != nil {
-			logger.ErrorContext(ctx, "error building request to fetch PVPC prices from REE", "err", err, "zone", zone.Name())
-			continue
-		}
-
-		var res fetchPVPCPricesResponse
-		err = json.NewDecoder(req.Body).Decode(&res)
-
-		if err != nil {
-			logger.ErrorContext(ctx, "error decoding response from REE", "err", err, "zone", zone.Name())
+			logger.ErrorContext(ctx, "error fetching PVPC prices from REE", "err", err, "zone", zone.Name())
 			continue
 		}
 
@@ -65,7 +58,7 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 			Values: make([]domain.HourlyPriceDto, 0, 24),
 		}
 
-		for _, v := range res.Included[0].Attributes.Values {
+		for _, v := range resBody.Included[0].Attributes.Values {
 			pricesDto.Values = append(pricesDto.Values, domain.HourlyPriceDto{
 				Datetime: v.Datetime,
 				Value:    v.Value,

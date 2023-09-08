@@ -61,45 +61,36 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 		}
 	}
 
-	// Delete after
+	todayCh := make(chan []domain.Prices)
+	tomorrowCh := make(chan []domain.Prices)
 
-	logger.DebugContext(ctx, "zones to fetch today", "zones", zonesToFetchToday)
-	logger.DebugContext(ctx, "zones to fetch tomorrow", "zones", zonesToFetchTomorrow)
+	go func() {
+		todayPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
+		if err != nil {
+			todayCh <- nil
+			logger.ErrorContext(ctx, "error fetching today prices", "err", err)
+		}
+		todayCh <- todayPrices
+	}()
+	go func() {
+		tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.Add(24*time.Hour))
+		if err != nil {
+			tomorrowCh <- nil
+			logger.ErrorContext(ctx, "error fetching tomorrow prices", "err", err)
+		}
+		tomorrowCh <- tomorrowPrices
+	}()
 
-	_, err = s.pricesProvider.FetchPVPCPrices(ctx, []domain.Zone{zonesToFetchToday[0]}, today)
+	pricesToStore := append(<-todayCh, <-tomorrowCh...)
+	err = s.pricesRepository.Save(ctx, pricesToStore)
 
-	return nil, err
+	if err != nil {
+		return nil, err
+	}
 
-	// todayCh := make(chan []domain.Prices)
-	// tomorrowCh := make(chan []domain.Prices)
-
-	// go func() {
-	// 	todayPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
-	// 	if err != nil {
-	// 		todayCh <- nil
-	// 		logger.ErrorContext(ctx, "error fetching today prices", "err", err)
-	// 	}
-	// 	todayCh <- todayPrices
-	// }()
-	// go func() {
-	// 	tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.Add(24*time.Hour))
-	// 	if err != nil {
-	// 		tomorrowCh <- nil
-	// 		logger.ErrorContext(ctx, "error fetching tomorrow prices", "err", err)
-	// 	}
-	// 	tomorrowCh <- tomorrowPrices
-	// }()
-
-	// pricesToStore := append(<-todayCh, <-tomorrowCh...)
-	// err = s.pricesRepository.Save(ctx, pricesToStore)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// pricesIDs := make([]domain.PricesID, len(pricesToStore))
-	// for i, price := range pricesToStore {
-	// 	pricesIDs[i] = price.ID()
-	// }
-	// return pricesIDs, nil
+	pricesIDs := make([]domain.PricesID, len(pricesToStore))
+	for i, price := range pricesToStore {
+		pricesIDs[i] = price.ID()
+	}
+	return pricesIDs, nil
 }
