@@ -41,9 +41,9 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 		query := fetchPVPCPricesRequest{StartDate: startDate, EndDate: endDate, TimeTrunc: "hour", GeoIds: zone.ExternalID()}
 
 		logger.DebugContext(ctx, "fetching PVPC prices from REE", "zone", zone.Name(), "query", query)
-		_, err := r.client.Path(pvpcPricesEndpoint).QueryStruct(query).ReceiveSuccess(resBody)
+		_, err := r.client.Path(pvpcPricesEndpoint).QueryStruct(query).Add("Accept", "application/json").ReceiveSuccess(resBody)
 
-		if err != nil {
+		if err != nil || resBody.Included == nil || len(resBody.Included) == 0 {
 			logger.ErrorContext(ctx, "error fetching PVPC prices from REE", "err", err, "zone", zone.Name())
 			continue
 		}

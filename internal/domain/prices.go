@@ -156,3 +156,21 @@ func (p HourlyPrice) Datetime() time.Time {
 func (p HourlyPrice) Value() float32 {
 	return p.value
 }
+
+// Serialize returns the PricesDto struct that represents the Prices.
+func (c Prices) Serialize() PricesDto {
+	values := make([]HourlyPriceDto, len(c.values))
+	for i, v := range c.values {
+		values[i] = HourlyPriceDto{
+			Datetime: v.datetime.Format(time.RFC3339),
+			Value:    v.value,
+		}
+	}
+
+	return PricesDto{
+		ID:     c.id.String(),
+		Date:   c.date.Format("2006-01-02"),
+		Zone:   c.zone.Serialize(),
+		Values: values,
+	}
+}

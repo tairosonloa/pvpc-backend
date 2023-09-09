@@ -89,3 +89,12 @@ func (c Zone) ExternalID() string {
 func (c Zone) Name() string {
 	return c.name
 }
+
+// Serialize returns the ZoneDto struct that represents the Zone.
+func (c Zone) Serialize() ZoneDto {
+	return ZoneDto{
+		ID:         c.id.String(),
+		ExternalID: c.externalID,
+		Name:       c.name,
+	}
+}
