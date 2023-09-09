@@ -8,5 +8,6 @@ packages:
       outpkg: mocks
       dir: internal/mocks
     interfaces:
+      PricesProvider:
       PricesRepository:
       ZonesRepository:
