@@ -32,6 +32,7 @@ func NewPricesService(
 
 // FetchAndStorePricesFromREE calls REE APIs to fetch prices and stores them in the database.
 func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain.PricesID, error) {
+	var allZones []domain.Zone
 	var zonesToFetchToday []domain.Zone
 	var zonesToFetchTomorrow []domain.Zone
 
@@ -39,24 +40,32 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 	if err != nil {
 		return nil, err
 	}
+
 	if len(prices) == 0 {
-		zonesToFetchToday, err = s.zonesRepository.GetAll(ctx)
+		allZones, err = s.zonesRepository.GetAll(ctx)
 		if err != nil {
 			return nil, err
 		}
+		zonesToFetchToday = allZones
 	}
 
 	today := now()
 
 	if today.Hour() > 20 {
-		zonesToFetchTomorrow, err = s.zonesRepository.GetAll(ctx)
-		if err != nil {
-			return nil, err
+		if len(allZones) == 0 {
+			allZones, err = s.zonesRepository.GetAll(ctx)
+			if err != nil {
+				return nil, err
+			}
+			zonesToFetchTomorrow = allZones
+		} else {
+			zonesToFetchTomorrow = allZones
 		}
 	}
 
+	todayTruncated := today.Truncate(24 * time.Hour)
 	for _, price := range prices {
-		if price.Date().Before(today) {
+		if price.Date().Before(todayTruncated) {
 			zonesToFetchToday = append(zonesToFetchToday, price.Zone())
 		}
 	}

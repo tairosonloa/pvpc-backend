@@ -49,7 +49,7 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 		}
 
 		pricesDto := domain.PricesDto{
-			ID:   fmt.Sprintf("%s-%s", zone.ID().String(), date.Format("2006-01-02")),
+			ID:   fmt.Sprintf("%s-%s", zone.ID().String(), dateString),
 			Date: date.Truncate(24 * time.Hour).Format(time.RFC3339),
 			Zone: domain.ZoneDto{
 				ID:         zone.ID().String(),
