@@ -32,7 +32,9 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 	require.NoError(t, err)
 	testZone, err := domain.NewZone(testZoneDto)
 	require.NoError(t, err)
-	todayTestDate := time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
+	loc, err := time.LoadLocation("Europe/Madrid")
+	require.NoError(t, err)
+	todayTestDate := time.Date(2020, 1, 1, 0, 0, 0, 0, loc)
 	tomorrowTestDate := todayTestDate.AddDate(0, 0, 1)
 	now = func() time.Time { return todayTestDate }
 	defer restoreNow(time.Now)
@@ -159,16 +161,17 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		currentNow := now
 		defer restoreNow(currentNow)
-		todayDate := time.Date(2020, 1, 1, 20, 0, 0, 0, time.Local)
-		tomorrowDate := todayDate.AddDate(0, 0, 1)
+		todayDate := time.Date(2020, 1, 1, 20, 0, 0, 0, loc)
+		today := time.Date(todayDate.Year(), todayDate.Month(), todayDate.Day(), 0, 0, 0, 0, todayDate.Location())
+		tomorrow := today.AddDate(0, 0, 1)
 		now = func() time.Time { return todayDate }
 
 		yesterdayPrices, err := domain.NewPrices(domain.PricesDto{ID: "ZON-2020-01-01", Zone: testZoneDto, Date: todayDate.AddDate(0, 0, -1).Format(time.RFC3339), Values: []domain.HourlyPriceDto{testValuesDto}})
 		require.NoError(t, err)
 
 		pricesRepositoryMock.On("Query", ctx, (*domain.ZoneID)(nil), (*time.Time)(nil)).Return([]domain.Prices{yesterdayPrices}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, todayDate).Return([]domain.Prices{testPricesFetch}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), tomorrowDate).Return([]domain.Prices{}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, today).Return([]domain.Prices{testPricesFetch}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), tomorrow).Return([]domain.Prices{}, nil)
 		pricesRepositoryMock.On("Save", ctx, mock.Anything).Return(nil)
 
 		pricesService := NewPricesService(pricesProviderMock, pricesRepositoryMock, zonesRepositoryMock)
@@ -189,16 +192,17 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		currentNow := now
 		defer restoreNow(currentNow)
-		todayDate := time.Date(2020, 1, 1, 20, 0, 0, 0, time.Local)
-		tomorrowDate := todayDate.AddDate(0, 0, 1)
+		todayDate := time.Date(2020, 1, 1, 20, 0, 0, 0, loc)
+		today := time.Date(todayDate.Year(), todayDate.Month(), todayDate.Day(), 0, 0, 0, 0, todayDate.Location())
+		tomorrow := today.AddDate(0, 0, 1)
 		now = func() time.Time { return todayDate }
 
 		todayPrices, err := domain.NewPrices(domain.PricesDto{ID: "ZON-2020-01-01", Zone: testZoneDto, Date: todayDate.Format(time.RFC3339), Values: []domain.HourlyPriceDto{testValuesDto}})
 		require.NoError(t, err)
 
 		pricesRepositoryMock.On("Query", ctx, (*domain.ZoneID)(nil), (*time.Time)(nil)).Return([]domain.Prices{todayPrices}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), todayDate).Return([]domain.Prices{}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), tomorrowDate).Return([]domain.Prices{}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), today).Return([]domain.Prices{}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), tomorrow).Return([]domain.Prices{}, nil)
 
 		pricesService := NewPricesService(pricesProviderMock, pricesRepositoryMock, zonesRepositoryMock)
 		res, err := pricesService.FetchAndStorePricesFromREE(ctx)
@@ -219,8 +223,9 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		currentNow := now
 		defer restoreNow(currentNow)
-		todayDate := time.Date(2020, 1, 1, 21, 0, 0, 0, time.Local)
-		tomorrowDate := todayDate.AddDate(0, 0, 1)
+		todayDate := time.Date(2020, 1, 1, 21, 0, 0, 0, loc)
+		today := time.Date(todayDate.Year(), todayDate.Month(), todayDate.Day(), 0, 0, 0, 0, todayDate.Location())
+		tomorrow := today.AddDate(0, 0, 1)
 		now = func() time.Time { return todayDate }
 
 		yesterdayPrices, err := domain.NewPrices(domain.PricesDto{ID: "ZON-2020-01-01", Zone: testZoneDto, Date: todayDate.AddDate(0, 0, -1).Format(time.RFC3339), Values: []domain.HourlyPriceDto{testValuesDto}})
@@ -228,8 +233,8 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		pricesRepositoryMock.On("Query", ctx, (*domain.ZoneID)(nil), (*time.Time)(nil)).Return([]domain.Prices{yesterdayPrices}, nil)
 		zonesRepositoryMock.On("GetAll", ctx).Return([]domain.Zone{testZone}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, todayDate).Return([]domain.Prices{testPricesFetch}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, tomorrowDate).Return([]domain.Prices{testPricesFetch}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, today).Return([]domain.Prices{testPricesFetch}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, tomorrow).Return([]domain.Prices{testPricesFetch}, nil)
 		pricesRepositoryMock.On("Save", ctx, mock.Anything).Return(nil)
 
 		pricesService := NewPricesService(pricesProviderMock, pricesRepositoryMock, zonesRepositoryMock)
@@ -250,8 +255,9 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		currentNow := now
 		defer restoreNow(currentNow)
-		todayDate := time.Date(2020, 1, 1, 21, 0, 0, 0, time.Local)
-		tomorrowDate := todayDate.AddDate(0, 0, 1)
+		todayDate := time.Date(2020, 1, 1, 21, 0, 0, 0, loc)
+		today := time.Date(todayDate.Year(), todayDate.Month(), todayDate.Day(), 0, 0, 0, 0, todayDate.Location())
+		tomorrow := today.AddDate(0, 0, 1)
 		now = func() time.Time { return todayDate }
 
 		todayPrices, err := domain.NewPrices(domain.PricesDto{ID: "ZON-2020-01-01", Zone: testZoneDto, Date: todayDate.Format(time.RFC3339), Values: []domain.HourlyPriceDto{testValuesDto}})
@@ -259,8 +265,8 @@ func Test_PricesService_FetchAndStorePricesFromREE(t *testing.T) {
 
 		pricesRepositoryMock.On("Query", ctx, (*domain.ZoneID)(nil), (*time.Time)(nil)).Return([]domain.Prices{todayPrices}, nil)
 		zonesRepositoryMock.On("GetAll", ctx).Return([]domain.Zone{testZone}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), todayDate).Return([]domain.Prices{}, nil)
-		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, tomorrowDate).Return([]domain.Prices{testPricesFetch}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, ([]domain.Zone)(nil), today).Return([]domain.Prices{}, nil)
+		pricesProviderMock.On("FetchPVPCPrices", ctx, []domain.Zone{testZone}, tomorrow).Return([]domain.Prices{testPricesFetch}, nil)
 		pricesRepositoryMock.On("Save", ctx, mock.Anything).Return(nil)
 
 		pricesService := NewPricesService(pricesProviderMock, pricesRepositoryMock, zonesRepositoryMock)

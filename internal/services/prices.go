@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"pvpc-backend/internal/domain"
@@ -32,6 +33,7 @@ func NewPricesService(
 
 // FetchAndStorePricesFromREE calls REE APIs to fetch prices and stores them in the database.
 func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain.PricesID, error) {
+	var today time.Time
 	var allZones []domain.Zone
 	var zonesToFetchToday []domain.Zone
 	var zonesToFetchTomorrow []domain.Zone
@@ -49,9 +51,9 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 		zonesToFetchToday = allZones
 	}
 
-	today := now()
+	now := now()
 
-	if today.Hour() > 20 {
+	if now.Hour() > 20 {
 		if len(allZones) == 0 {
 			allZones, err = s.zonesRepository.GetAll(ctx)
 			if err != nil {
@@ -63,9 +65,18 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 		}
 	}
 
-	todayTruncated := today.Truncate(24 * time.Hour)
+	locationStr := "Europe/Madrid"
+	loc, err := time.LoadLocation(locationStr)
+
+	if err != nil {
+		logger.ErrorContext(ctx, fmt.Sprintf("error loading %s timezone. Using server default: %s", locationStr, now.Location().String()), "err", err)
+		today = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	} else {
+		today = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+	}
+
 	for _, price := range prices {
-		if price.Date().Before(todayTruncated) {
+		if price.Date().Before(today) {
 			zonesToFetchToday = append(zonesToFetchToday, price.Zone())
 		}
 	}
