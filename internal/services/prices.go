@@ -8,6 +8,8 @@ import (
 	"pvpc-backend/pkg/logger"
 )
 
+var now = time.Now
+
 // PricesService is the domain service that manages operations over Price's.
 type PricesService struct {
 	pricesProvider   domain.PricesProvider
@@ -44,7 +46,7 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 		}
 	}
 
-	today := time.Now()
+	today := now()
 
 	if today.Hour() > 20 {
 		zonesToFetchTomorrow, err = s.zonesRepository.GetAll(ctx)
@@ -52,8 +54,6 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 			return nil, err
 		}
 	}
-
-	today = today.Truncate(24 * time.Hour)
 
 	for _, price := range prices {
 		if price.Date().Before(today) {
@@ -73,7 +73,7 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 		todayCh <- todayPrices
 	}()
 	go func() {
-		tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.Add(24*time.Hour))
+		tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.AddDate(0, 0, 1))
 		if err != nil {
 			tomorrowCh <- nil
 			logger.ErrorContext(ctx, "error fetching tomorrow prices", "err", err)
