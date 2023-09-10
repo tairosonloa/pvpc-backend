@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
@@ -20,12 +19,14 @@ func Test_ZonesService_ListZones(t *testing.T) {
 
 	t.Run("fails with a repository error", func(t *testing.T) {
 		repositoryMock := new(mocks.ZonesRepository)
-		repositoryMock.On("GetAll", mock.Anything).Return(nil, errors.NewDomainError(errors.PersistenceError, "mock-error"))
+		mockError := errors.NewDomainError(errors.PersistenceError, "mock-error")
+		repositoryMock.On("GetAll", mock.Anything).Return(nil, mockError)
 
-		listingService := NewZonesService(repositoryMock)
-		res, err := listingService.ListZones(context.Background())
+		zonesService := NewZonesService(repositoryMock)
+		res, err := zonesService.ListZones(context.Background())
 		require.Error(t, err)
-		assert.Nil(t, res)
+		require.Equal(t, mockError, err)
+		require.Nil(t, res)
 
 		repositoryMock.AssertExpectations(t)
 	})
@@ -41,10 +42,10 @@ func Test_ZonesService_ListZones(t *testing.T) {
 		repositoryMock := new(mocks.ZonesRepository)
 		repositoryMock.On("GetAll", mock.Anything).Return([]domain.Zone{zone}, nil)
 
-		listingService := NewZonesService(repositoryMock)
-		res, err := listingService.ListZones(context.Background())
+		zonesService := NewZonesService(repositoryMock)
+		res, err := zonesService.ListZones(context.Background())
 		require.NoError(t, err)
-		assert.Equal(t, zone, res[0])
+		require.Equal(t, zone, res[0])
 
 		repositoryMock.AssertExpectations(t)
 	})

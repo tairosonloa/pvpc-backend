@@ -15,6 +15,7 @@
     "Middlewares",
     "outpkg",
     "Pvpc",
+    "redataapi",
     "sqlmock",
     "storagemocks",
     "stretchr"

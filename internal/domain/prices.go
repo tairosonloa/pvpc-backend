@@ -2,7 +2,9 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"regexp"
+	"time"
 
 	"pvpc-backend/internal/domain/errors"
 )
@@ -25,7 +27,7 @@ type HourlyPriceDto struct {
 // Prices is the domain entity that represents PVPC prices for a day.
 type Prices struct {
 	id     PricesID
-	date   string
+	date   time.Time
 	zone   Zone
 	values []HourlyPrice
 }
@@ -34,7 +36,7 @@ type Prices struct {
 // As prices for the same hour varies between zones, this entity has not meaning without a Zone,
 // which is linked to the parent Prices entity.
 type HourlyPrice struct {
-	datetime string
+	datetime time.Time
 	value    float32
 }
 
@@ -69,6 +71,21 @@ func (id PricesID) String() string {
 type PricesRepository interface {
 	// Save persists the given prices.
 	Save(ctx context.Context, prices []Prices) error
+	// Query returns the prices for the given date and zoneID.
+	//
+	// If zoneID is nil, it returns the prices for all zones.
+	//
+	// If date is nil, it returns the most up to date prices for the given zoneID,
+	// that can be today's or tomorrow's prices.
+	Query(ctx context.Context, zoneID *ZoneID, date *time.Time) ([]Prices, error)
+}
+
+// PricesProvider defines the expected behavior from a prices provider.
+// At the end, it's an adapter over the REE APIs.
+type PricesProvider interface {
+	// FetchPVPCPrices fetches the PVPC prices for the given zones and date.
+	// If the zones slice is empty or nil, it returns nil.
+	FetchPVPCPrices(ctx context.Context, zones []Zone, date time.Time) ([]Prices, error)
 }
 
 // NewPrices creates a new Prices struct.
@@ -85,15 +102,24 @@ func NewPrices(pricesDto PricesDto) (Prices, error) {
 
 	pricesValues := make([]HourlyPrice, len(pricesDto.Values))
 	for i, v := range pricesDto.Values {
+		datetime, err := time.Parse(time.RFC3339, v.Datetime)
+		if err != nil {
+			return Prices{}, errors.WrapIntoDomainError(err, errors.InvalidTime, fmt.Sprintf("error parsing HourlyPrice datetime value: %s", v.Datetime))
+		}
 		pricesValues[i] = HourlyPrice{
-			datetime: v.Datetime,
+			datetime: datetime,
 			value:    v.Value,
 		}
 	}
 
+	date, err := time.Parse(time.RFC3339, pricesDto.Date)
+	if err != nil {
+		return Prices{}, errors.WrapIntoDomainError(err, errors.InvalidTime, fmt.Sprintf("error parsing Prices date value: %s", pricesDto.Date))
+	}
+
 	prices := Prices{
 		id:     idVO,
-		date:   pricesDto.Date,
+		date:   date,
 		zone:   zone,
 		values: pricesValues,
 	}
@@ -107,7 +133,7 @@ func (c Prices) ID() PricesID {
 }
 
 // Date returns the Prices' date.
-func (c Prices) Date() string {
+func (c Prices) Date() time.Time {
 	return c.date
 }
 
@@ -122,11 +148,29 @@ func (c Prices) Values() []HourlyPrice {
 }
 
 // Datetime returns the HourlyPrice's datetime.
-func (p HourlyPrice) Datetime() string {
+func (p HourlyPrice) Datetime() time.Time {
 	return p.datetime
 }
 
 // Value returns the HourlyPrice's value.
 func (p HourlyPrice) Value() float32 {
 	return p.value
+}
+
+// Serialize returns the PricesDto struct that represents the Prices.
+func (c Prices) Serialize() PricesDto {
+	values := make([]HourlyPriceDto, len(c.values))
+	for i, v := range c.values {
+		values[i] = HourlyPriceDto{
+			Datetime: v.datetime.Format(time.RFC3339),
+			Value:    v.value,
+		}
+	}
+
+	return PricesDto{
+		ID:     c.id.String(),
+		Date:   c.date.Format("2006-01-02"),
+		Zone:   c.zone.Serialize(),
+		Values: values,
+	}
 }

@@ -40,7 +40,7 @@ func (r *ZonesRepository) GetAll(ctx context.Context) ([]domain.Zone, error) {
 	logger.DebugContext(ctx, "Getting all Zones from database")
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
-	query, _ := zoneSQL.SelectFrom(zonesTableName).Build()
+	query, _ := sqlbuilder.WithFlavor(zoneSQL.SelectFrom(zonesTableName), sqlbuilder.PostgreSQL).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -74,7 +74,7 @@ func (r *ZonesRepository) GetByID(ctx context.Context, id domain.ZoneID) (domain
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
-	query, args := selectQB.Where(selectQB.Equal("id", id.String())).Build()
+	query, args := sqlbuilder.WithFlavor(selectQB.Where(selectQB.Equal("id", id.String())), sqlbuilder.PostgreSQL).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
@@ -103,7 +103,7 @@ func (r *ZonesRepository) GetByExternalID(ctx context.Context, externalID string
 	zoneSQL := sqlbuilder.NewStruct(new(zoneSchema))
 
 	selectQB := zoneSQL.SelectFrom(zonesTableName)
-	query, args := selectQB.Where(selectQB.Equal("external_id", externalID)).Build()
+	query, args := sqlbuilder.WithFlavor(selectQB.Where(selectQB.Equal("external_id", externalID)), sqlbuilder.PostgreSQL).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()

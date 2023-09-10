@@ -12,8 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"pvpc-backend/internal/platform/http/handlers/health"
+	"pvpc-backend/internal/platform/http/handlers/prices"
 	"pvpc-backend/internal/platform/http/handlers/zones"
 	"pvpc-backend/internal/platform/http/middlewares"
+	"pvpc-backend/internal/platform/providers/redataapi"
 	"pvpc-backend/internal/platform/storage/postgresql"
 	servicespkg "pvpc-backend/internal/services"
 	"pvpc-backend/pkg/logger"
@@ -33,10 +35,11 @@ type storage struct {
 }
 
 type services struct {
-	zonesService servicespkg.ZonesService
+	pricesService servicespkg.PricesService
+	zonesService  servicespkg.ZonesService
 }
 
-func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration) HttpServer {
+func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration, reeApiUrl string) HttpServer {
 	if env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -51,7 +54,7 @@ func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Dura
 	}
 
 	srv.registerMiddlewares()
-	srv.registerServices()
+	srv.registerServices(reeApiUrl)
 	srv.registerRoutes()
 
 	return srv
@@ -62,17 +65,25 @@ func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(middlewares.Logger([]string{"/v1/health"}))
 }
 
-func (s *HttpServer) registerServices() {
+func (s *HttpServer) registerServices(reeApiUrl string) {
+	// Providers
+	pricesProvider := redataapi.NewREDataAPI(reeApiUrl)
+
 	// Repositories
+	pricesRepository := postgresql.NewPricesRepository(s.storage.db, s.storage.dbTimeout)
 	zonesRepository := postgresql.NewZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
+	s.services.pricesService = servicespkg.NewPricesService(pricesProvider, pricesRepository, zonesRepository)
 	s.services.zonesService = servicespkg.NewZonesService(zonesRepository)
 }
 
 func (s *HttpServer) registerRoutes() {
 	// Health check
 	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
+
+	// Prices
+	s.engine.POST("/v1/prices", prices.CreatePricesV1(s.services.pricesService))
 
 	// Zones
 	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.zonesService))

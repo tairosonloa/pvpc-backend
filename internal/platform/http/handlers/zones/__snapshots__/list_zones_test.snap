@@ -1,6 +1,6 @@
 
 [Test_ListZonesHandlerV1_Success - 1]
-{"zones":[{"id":"ABC","external_id":"1234","name":"zone1"},{"id":"DEF","external_id":"5678","name":"zone2"}],"total":2}
+{"zones":[{"ID":"ABC","externalID":"1234","name":"zone1"},{"ID":"DEF","externalID":"5678","name":"zone2"}],"total":2}
 ---
 
 [Test_ListZonesHandlerV1_Empty - 1]
@@ -8,5 +8,5 @@
 ---
 
 [Test_ListZonesHandlerV1_Error - 1]
-{"error_code":"INTERNAL_SERVER_ERROR","message":"mock error","status_code":500}
+{"errorCode":"INTERNAL_SERVER_ERROR","message":"mock error","statusCode":500}
 ---
