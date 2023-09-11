@@ -13,21 +13,24 @@ var now = time.Now
 
 // PricesService is the domain service that manages operations over Price's.
 type PricesService struct {
-	pricesProvider   domain.PricesProvider
-	pricesRepository domain.PricesRepository
-	zonesRepository  domain.ZonesRepository
+	mainPricesProvider     domain.PricesProvider
+	fallbackPricesProvider domain.PricesProvider
+	pricesRepository       domain.PricesRepository
+	zonesRepository        domain.ZonesRepository
 }
 
 // NewPricesService returns a new ListingService.
 func NewPricesService(
-	pricesProvider domain.PricesProvider,
+	mainPricesProvider domain.PricesProvider,
+	fallbackPricesProvider domain.PricesProvider,
 	pricesRepository domain.PricesRepository,
 	zonesRepository domain.ZonesRepository,
 ) PricesService {
 	return PricesService{
-		pricesProvider:   pricesProvider,
-		pricesRepository: pricesRepository,
-		zonesRepository:  zonesRepository,
+		mainPricesProvider:     mainPricesProvider,
+		fallbackPricesProvider: fallbackPricesProvider,
+		pricesRepository:       pricesRepository,
+		zonesRepository:        zonesRepository,
 	}
 }
 
@@ -85,18 +88,33 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 	tomorrowCh := make(chan []domain.Prices)
 
 	go func() {
-		todayPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
-		if err != nil {
+		if len(zonesToFetchToday) == 0 {
 			todayCh <- nil
-			logger.ErrorContext(ctx, "error fetching today prices", "err", err)
+			return
+		}
+		todayPrices, err := s.mainPricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
+		if err != nil || len(todayPrices) == 0 {
+			logger.WarnContext(ctx, "couldn't fetch today prices from main provider. Using fallback", "err", err)
+			todayPrices, err = s.fallbackPricesProvider.FetchPVPCPrices(ctx, zonesToFetchToday, today)
+			if err != nil || len(todayPrices) == 0 {
+				logger.ErrorContext(ctx, "couldn't fetch today prices from fallback provider", "err", err)
+			}
 		}
 		todayCh <- todayPrices
 	}()
+
 	go func() {
-		tomorrowPrices, err := s.pricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, today.AddDate(0, 0, 1))
-		if err != nil {
+		if len(zonesToFetchTomorrow) == 0 {
 			tomorrowCh <- nil
-			logger.ErrorContext(ctx, "error fetching tomorrow prices", "err", err)
+			return
+		}
+		tomorrowPrices, err := s.mainPricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, tomorrow)
+		if err != nil || len(tomorrowPrices) == 0 {
+			logger.WarnContext(ctx, "couldn't fetch tomorrow prices from main provider. Using fallback", "err", err)
+			tomorrowPrices, err = s.fallbackPricesProvider.FetchPVPCPrices(ctx, zonesToFetchTomorrow, tomorrow)
+			if err != nil || len(tomorrowPrices) == 0 {
+				logger.ErrorContext(ctx, "couldn't fetch tomorrow prices from fallback provider", "err", err)
+			}
 		}
 		tomorrowCh <- tomorrowPrices
 	}()

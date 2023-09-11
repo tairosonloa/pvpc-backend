@@ -29,7 +29,9 @@ type config struct {
 	DbName    string        `split_words:"true" default:"test_db_name"`
 	DbTimeout time.Duration `split_words:"true" default:"5s"`
 	// REE API configuration
-	ReeApiUrl string `split_words:"true"`
+	RedataApiUrl  string `split_words:"true" required:"true"`
+	EsiosApiUrl   string `split_words:"true" required:"true"`
+	EsiosApiToken string `split_words:"true" required:"true"`
 }
 
 func main() {
@@ -44,7 +46,7 @@ func main() {
 	}
 	defer db.Close()
 
-	srv := server.NewHttpServer(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout, cfg.ReeApiUrl)
+	srv := server.NewHttpServer(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout, cfg.RedataApiUrl, cfg.EsiosApiUrl, cfg.EsiosApiToken)
 	srv.Run()
 }
 
