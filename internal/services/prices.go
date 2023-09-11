@@ -33,38 +33,26 @@ func NewPricesService(
 
 // FetchAndStorePricesFromREE calls REE APIs to fetch prices and stores them in the database.
 func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain.PricesID, error) {
-	var today time.Time
-	var allZones []domain.Zone
+	var today, tomorrow time.Time
 	var zonesToFetchToday []domain.Zone
 	var zonesToFetchTomorrow []domain.Zone
 
-	prices, err := s.pricesRepository.Query(ctx, nil, nil)
+	allZones, err := s.zonesRepository.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pricesMapByZoneID := make(map[domain.ZoneID]domain.Prices)
+
+	allPrices, err := s.pricesRepository.Query(ctx, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(prices) == 0 {
-		allZones, err = s.zonesRepository.GetAll(ctx)
-		if err != nil {
-			return nil, err
-		}
-		zonesToFetchToday = allZones
+	for _, prices := range allPrices {
+		pricesMapByZoneID[prices.Zone().ID()] = prices
 	}
 
 	now := now()
-
-	if now.Hour() > 20 {
-		if len(allZones) == 0 {
-			allZones, err = s.zonesRepository.GetAll(ctx)
-			if err != nil {
-				return nil, err
-			}
-			zonesToFetchTomorrow = allZones
-		} else {
-			zonesToFetchTomorrow = allZones
-		}
-	}
-
 	locationStr := "Europe/Madrid"
 	loc, err := time.LoadLocation(locationStr)
 
@@ -74,11 +62,23 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 	} else {
 		today = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
 	}
+	tomorrow = today.AddDate(0, 0, 1)
 
-	for _, price := range prices {
-		if price.Date().Before(today) {
-			zonesToFetchToday = append(zonesToFetchToday, price.Zone())
+	for _, zone := range allZones {
+		if _, ok := pricesMapByZoneID[zone.ID()]; !ok {
+			zonesToFetchToday = append(zonesToFetchToday, zone)
+			if now.Hour() > 20 {
+				zonesToFetchTomorrow = append(zonesToFetchTomorrow, zone)
+			}
+		} else {
+			if pricesMapByZoneID[zone.ID()].Date().Before(today) {
+				zonesToFetchToday = append(zonesToFetchToday, zone)
+			}
+			if now.Hour() > 20 && pricesMapByZoneID[zone.ID()].Date().Before(tomorrow) {
+				zonesToFetchTomorrow = append(zonesToFetchTomorrow, zone)
+			}
 		}
+
 	}
 
 	todayCh := make(chan []domain.Prices)
