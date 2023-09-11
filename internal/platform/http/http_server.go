@@ -15,6 +15,7 @@ import (
 	"pvpc-backend/internal/platform/http/handlers/prices"
 	"pvpc-backend/internal/platform/http/handlers/zones"
 	"pvpc-backend/internal/platform/http/middlewares"
+	"pvpc-backend/internal/platform/providers/esios"
 	"pvpc-backend/internal/platform/providers/redataapi"
 	"pvpc-backend/internal/platform/storage/postgresql"
 	servicespkg "pvpc-backend/internal/services"
@@ -39,7 +40,7 @@ type services struct {
 	zonesService  servicespkg.ZonesService
 }
 
-func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration, reeApiUrl string) HttpServer {
+func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Duration, db *sql.DB, dbTimeout time.Duration, redataApiUrl, esiosApiUrl, esiosApiToken string) HttpServer {
 	if env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -54,7 +55,7 @@ func NewHttpServer(host string, port uint, env string, shutdownTimeout time.Dura
 	}
 
 	srv.registerMiddlewares()
-	srv.registerServices(reeApiUrl)
+	srv.registerServices(redataApiUrl, esiosApiUrl, esiosApiToken)
 	srv.registerRoutes()
 
 	return srv
@@ -65,16 +66,17 @@ func (s *HttpServer) registerMiddlewares() {
 	s.engine.Use(middlewares.Logger([]string{"/v1/health"}))
 }
 
-func (s *HttpServer) registerServices(reeApiUrl string) {
+func (s *HttpServer) registerServices(redataApiUrl, esiosApiUrl, esiosApiToken string) {
 	// Providers
-	pricesProvider := redataapi.NewREDataAPI(reeApiUrl)
+	pricesProviderEsios := esios.NewEsiosAPI(esiosApiUrl, esiosApiToken)
+	pricesProviderREData := redataapi.NewREDataAPI(redataApiUrl)
 
 	// Repositories
 	pricesRepository := postgresql.NewPricesRepository(s.storage.db, s.storage.dbTimeout)
 	zonesRepository := postgresql.NewZonesRepository(s.storage.db, s.storage.dbTimeout)
 
 	// Services
-	s.services.pricesService = servicespkg.NewPricesService(pricesProvider, pricesRepository, zonesRepository)
+	s.services.pricesService = servicespkg.NewPricesService(pricesProviderEsios, pricesProviderREData, pricesRepository, zonesRepository)
 	s.services.zonesService = servicespkg.NewZonesService(zonesRepository)
 }
 

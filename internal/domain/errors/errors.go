@@ -8,11 +8,13 @@ import (
 type ErrorCode string
 
 const (
+	InternalError    ErrorCode = "INTERNAL_ERROR"
 	InvalidPricesID  ErrorCode = "INVALID_PRICES_ID"
 	InvalidTime      ErrorCode = "INVALID_TIME"
-	InvalidZoneID    ErrorCode = "INVALID_PRICES_ZONE_ID"
+	InvalidZoneID    ErrorCode = "INVALID_ZONE_ID"
 	PersistenceError ErrorCode = "PERSISTENCE_ERROR"
-	ZoneNotFound     ErrorCode = "PRICES_ZONE_NOT_FOUND"
+	ProviderError    ErrorCode = "PROVIDER_ERROR"
+	ZoneNotFound     ErrorCode = "ZONE_NOT_FOUND"
 )
 
 type domainError struct {

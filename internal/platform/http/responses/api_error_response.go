@@ -39,7 +39,9 @@ func mapErrorToStatusCode(err error) int {
 		return http.StatusBadRequest
 	case errors.ZoneNotFound:
 		return http.StatusNotFound
-	case errors.PersistenceError:
+	case errors.ProviderError:
+		return http.StatusServiceUnavailable
+	case errors.PersistenceError, errors.InternalError:
 		return http.StatusInternalServerError
 	default:
 		return http.StatusInternalServerError
