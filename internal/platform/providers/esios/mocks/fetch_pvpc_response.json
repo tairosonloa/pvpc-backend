@@ -1,0 +1,419 @@
+{
+  "indicator": {
+    "name": "Término de facturación de energía activa del PVPC 2.0TD",
+    "short_name": "PVPC T. 2.0TD",
+    "id": 1001,
+    "composited": false,
+    "step_type": "linear",
+    "disaggregated": true,
+    "magnitud": [
+      {
+        "name": "Precio",
+        "id": 23
+      }
+    ],
+    "tiempo": [
+      {
+        "name": "Hora",
+        "id": 4
+      }
+    ],
+    "geos": [
+      {
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      }
+    ],
+    "values_updated_at": "2023-09-07T20:46:13.000+02:00",
+    "values": [
+      {
+        "value": 151.96,
+        "datetime": "2023-09-08T00:00:00.000+02:00",
+        "datetime_utc": "2023-09-07T22:00:00Z",
+        "tz_time": "2023-09-07T22:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 151.96,
+        "datetime": "2023-09-08T00:00:00.000+02:00",
+        "datetime_utc": "2023-09-07T22:00:00Z",
+        "tz_time": "2023-09-07T22:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 146.21,
+        "datetime": "2023-09-08T01:00:00.000+02:00",
+        "datetime_utc": "2023-09-07T23:00:00Z",
+        "tz_time": "2023-09-07T23:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 146.21,
+        "datetime": "2023-09-08T01:00:00.000+02:00",
+        "datetime_utc": "2023-09-07T23:00:00Z",
+        "tz_time": "2023-09-07T23:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 144.7,
+        "datetime": "2023-09-08T02:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T00:00:00Z",
+        "tz_time": "2023-09-08T00:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 144.7,
+        "datetime": "2023-09-08T02:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T00:00:00Z",
+        "tz_time": "2023-09-08T00:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 144.24,
+        "datetime": "2023-09-08T03:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T01:00:00Z",
+        "tz_time": "2023-09-08T01:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 144.24,
+        "datetime": "2023-09-08T03:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T01:00:00Z",
+        "tz_time": "2023-09-08T01:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 143.23,
+        "datetime": "2023-09-08T04:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T02:00:00Z",
+        "tz_time": "2023-09-08T02:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 143.23,
+        "datetime": "2023-09-08T04:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T02:00:00Z",
+        "tz_time": "2023-09-08T02:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 145.55,
+        "datetime": "2023-09-08T05:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T03:00:00Z",
+        "tz_time": "2023-09-08T03:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 145.55,
+        "datetime": "2023-09-08T05:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T03:00:00Z",
+        "tz_time": "2023-09-08T03:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 147.04,
+        "datetime": "2023-09-08T06:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T04:00:00Z",
+        "tz_time": "2023-09-08T04:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 147.04,
+        "datetime": "2023-09-08T06:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T04:00:00Z",
+        "tz_time": "2023-09-08T04:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 145.03,
+        "datetime": "2023-09-08T07:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T05:00:00Z",
+        "tz_time": "2023-09-08T05:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 145.03,
+        "datetime": "2023-09-08T07:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T05:00:00Z",
+        "tz_time": "2023-09-08T05:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 163.79,
+        "datetime": "2023-09-08T08:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T06:00:00Z",
+        "tz_time": "2023-09-08T06:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 163.79,
+        "datetime": "2023-09-08T08:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T06:00:00Z",
+        "tz_time": "2023-09-08T06:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 162.9,
+        "datetime": "2023-09-08T09:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T07:00:00Z",
+        "tz_time": "2023-09-08T07:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 162.9,
+        "datetime": "2023-09-08T09:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T07:00:00Z",
+        "tz_time": "2023-09-08T07:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 208.94,
+        "datetime": "2023-09-08T10:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T08:00:00Z",
+        "tz_time": "2023-09-08T08:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 208.94,
+        "datetime": "2023-09-08T10:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T08:00:00Z",
+        "tz_time": "2023-09-08T08:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 186.25,
+        "datetime": "2023-09-08T11:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T09:00:00Z",
+        "tz_time": "2023-09-08T09:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 186.25,
+        "datetime": "2023-09-08T11:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T09:00:00Z",
+        "tz_time": "2023-09-08T09:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 185.09,
+        "datetime": "2023-09-08T12:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T10:00:00Z",
+        "tz_time": "2023-09-08T10:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 185.09,
+        "datetime": "2023-09-08T12:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T10:00:00Z",
+        "tz_time": "2023-09-08T10:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 184.44,
+        "datetime": "2023-09-08T13:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T11:00:00Z",
+        "tz_time": "2023-09-08T11:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 184.44,
+        "datetime": "2023-09-08T13:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T11:00:00Z",
+        "tz_time": "2023-09-08T11:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 137.71,
+        "datetime": "2023-09-08T14:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T12:00:00Z",
+        "tz_time": "2023-09-08T12:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 137.71,
+        "datetime": "2023-09-08T14:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T12:00:00Z",
+        "tz_time": "2023-09-08T12:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 136.75,
+        "datetime": "2023-09-08T15:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T13:00:00Z",
+        "tz_time": "2023-09-08T13:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 136.75,
+        "datetime": "2023-09-08T15:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T13:00:00Z",
+        "tz_time": "2023-09-08T13:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 136.28,
+        "datetime": "2023-09-08T16:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T14:00:00Z",
+        "tz_time": "2023-09-08T14:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 136.28,
+        "datetime": "2023-09-08T16:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T14:00:00Z",
+        "tz_time": "2023-09-08T14:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 147.47,
+        "datetime": "2023-09-08T17:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T15:00:00Z",
+        "tz_time": "2023-09-08T15:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 147.47,
+        "datetime": "2023-09-08T17:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T15:00:00Z",
+        "tz_time": "2023-09-08T15:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 206.88,
+        "datetime": "2023-09-08T18:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T16:00:00Z",
+        "tz_time": "2023-09-08T16:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 206.88,
+        "datetime": "2023-09-08T18:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T16:00:00Z",
+        "tz_time": "2023-09-08T16:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 216.52,
+        "datetime": "2023-09-08T19:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T17:00:00Z",
+        "tz_time": "2023-09-08T17:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 216.52,
+        "datetime": "2023-09-08T19:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T17:00:00Z",
+        "tz_time": "2023-09-08T17:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 228.11,
+        "datetime": "2023-09-08T20:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T18:00:00Z",
+        "tz_time": "2023-09-08T18:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 228.11,
+        "datetime": "2023-09-08T20:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T18:00:00Z",
+        "tz_time": "2023-09-08T18:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 234.52,
+        "datetime": "2023-09-08T21:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T19:00:00Z",
+        "tz_time": "2023-09-08T19:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 234.52,
+        "datetime": "2023-09-08T21:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T19:00:00Z",
+        "tz_time": "2023-09-08T19:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 188.72,
+        "datetime": "2023-09-08T22:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T20:00:00Z",
+        "tz_time": "2023-09-08T20:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 188.72,
+        "datetime": "2023-09-08T22:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T20:00:00Z",
+        "tz_time": "2023-09-08T20:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      },
+      {
+        "value": 178.63,
+        "datetime": "2023-09-08T23:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T21:00:00Z",
+        "tz_time": "2023-09-08T21:00:00.000Z",
+        "geo_id": 1234,
+        "geo_name": "Península"
+      },
+      {
+        "value": 178.63,
+        "datetime": "2023-09-08T23:00:00.000+02:00",
+        "datetime_utc": "2023-09-08T21:00:00Z",
+        "tz_time": "2023-09-08T21:00:00.000Z",
+        "geo_id": 5678,
+        "geo_name": "Baleares"
+      }
+    ]
+  }
+}

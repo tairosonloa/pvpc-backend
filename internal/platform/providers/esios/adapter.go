@@ -37,8 +37,8 @@ func (r *EsiosAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, dat
 	pricesDtoMap := make(map[uint16]domain.PricesDto, len(zones))
 	dateTruncated := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
 	dateString := dateTruncated.Format("2006-01-02")
-	startDate := dateString + "T00:00"
-	endDate := dateString + "T23:59"
+	startDate := dateString + "T00:00:00"
+	endDate := dateString + "T23:59:59"
 
 	geoIDs := make([]string, 0, len(zones))
 	zonesNames := make([]string, 0, len(zones))
@@ -90,6 +90,8 @@ func (r *EsiosAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, dat
 			Datetime: value.Datetime,
 			Value:    value.Value,
 		})
+
+		pricesDtoMap[value.GeoID] = pricesDto
 	}
 
 	prices := make([]domain.Prices, 0, len(pricesDtoMap))
