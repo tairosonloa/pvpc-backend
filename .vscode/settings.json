@@ -8,6 +8,8 @@
     "charmbracelet",
     "Datetime",
     "envconfig",
+    "Esios",
+    "esiosapi",
     "godotenv",
     "gonic",
     "Infof",

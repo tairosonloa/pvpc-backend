@@ -31,26 +31,27 @@ func (r *REDataAPI) FetchPVPCPrices(ctx context.Context, zones []domain.Zone, da
 		return nil, nil
 	}
 
-	prices := make([]domain.Prices, 0, len(zones))
-	dateString := date.Format("2006-01-02")
+	dateTruncated := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+	dateString := dateTruncated.Format("2006-01-02")
 	startDate := dateString + "T00:00"
 	endDate := dateString + "T23:59"
+	prices := make([]domain.Prices, 0, len(zones))
 
 	for _, zone := range zones {
 		resBody := new(fetchPVPCPricesResponse)
 		query := fetchPVPCPricesRequest{StartDate: startDate, EndDate: endDate, TimeTrunc: "hour", GeoIds: zone.ExternalID()}
 
-		logger.DebugContext(ctx, "fetching PVPC prices from REE", "zone", zone.Name(), "query", query)
+		logger.DebugContext(ctx, "fetching PVPC prices from REData API", "zone", zone.Name(), "query", query)
 		_, err := r.client.Path(pvpcPricesEndpoint).QueryStruct(query).Add("Accept", "application/json").ReceiveSuccess(resBody)
 
-		if err != nil || resBody.Included == nil || len(resBody.Included) == 0 {
-			logger.ErrorContext(ctx, "error fetching PVPC prices from REE", "err", err, "zone", zone.Name())
+		if err != nil || len(resBody.Included) == 0 {
+			logger.ErrorContext(ctx, "error fetching PVPC prices from REData API", "err", err, "zone", zone.Name())
 			continue
 		}
 
 		pricesDto := domain.PricesDto{
 			ID:   fmt.Sprintf("%s-%s", zone.ID().String(), dateString),
-			Date: date.Truncate(24 * time.Hour).Format(time.RFC3339),
+			Date: dateTruncated.Format(time.RFC3339),
 			Zone: domain.ZoneDto{
 				ID:         zone.ID().String(),
 				ExternalID: zone.ExternalID(),
