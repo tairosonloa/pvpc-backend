@@ -18,13 +18,13 @@ func Test_PricesRepository_Save(t *testing.T) {
 		id1, date1, date1RFC3339 := "ZON-2023-08-10", "2023-08-10", "2023-08-10T00:00:00+02:00"
 		id2, date2, date2RFC3339 := "ZON-2023-08-10", "2023-08-10", "2023-08-10T00:00:00+02:00"
 		zoneID, zoneExternalID, zoneName := "ZON", "123", "Test zone"
-		datetime, value := "2023-08-10T00:00:00+02:00", float32(0.1234)
+		datetime, value := "2023-08-10T00:00:00+02:00", float64(0.1234)
 
 		prices1, err := domain.NewPrices(domain.PricesDto{
 			ID:     id1,
 			Date:   date1RFC3339,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float64(value)}, {Datetime: datetime, Value: float64(value)}},
 		})
 		require.NoError(t, err)
 
@@ -58,13 +58,13 @@ func Test_PricesRepository_Save(t *testing.T) {
 		id1, date1, date1RFC3339 := "ZON-2023-08-10", "2023-08-10", "2023-08-10T00:00:00+02:00"
 		id2, date2, date2RFC3339 := "ZON-2023-08-10", "2023-08-10", "2023-08-10T00:00:00+02:00"
 		zoneID, zoneExternalID, zoneName := "ZON", "123", "Test zone"
-		datetime, value := "2023-08-10T00:00:00+02:00", float32(0.1234)
+		datetime, value := "2023-08-10T00:00:00+02:00", float64(0.1234)
 
 		prices1, err := domain.NewPrices(domain.PricesDto{
 			ID:     id1,
 			Date:   date1RFC3339,
 			Zone:   domain.ZoneDto{ID: zoneID, ExternalID: zoneExternalID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float32(value)}, {Datetime: datetime, Value: float32(value)}},
+			Values: []domain.HourlyPriceDto{{Datetime: datetime, Value: float64(value)}, {Datetime: datetime, Value: float64(value)}},
 		})
 		require.NoError(t, err)
 
@@ -128,7 +128,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
-			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
 			"SELECT DISTINCT ON (prices.zone_id) prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id ORDER BY prices.zone_id, prices.date DESC").
@@ -143,7 +143,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			ID:     id.String(),
 			Date:   date,
 			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float64(0.1234)}}},
 		)
 		require.NoError(t, err)
 
@@ -167,7 +167,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
-			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
 			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE zone_id = ZON ORDER BY date DESC LIMIT 1").
@@ -182,7 +182,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			ID:     id.String(),
 			Date:   date,
 			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float64(0.1234)}}},
 		)
 		require.NoError(t, err)
 
@@ -209,7 +209,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
-			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
 			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE date = $1").
@@ -225,7 +225,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			ID:     id.String(),
 			Date:   date,
 			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float64(0.1234)}}},
 		)
 		require.NoError(t, err)
 
@@ -252,7 +252,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 		require.NoError(t, err)
 
 		rows := sqlmock.NewRows([]string{"id", "date", "zone_id", "values", "external_id", "name"}).
-			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float32(0.1234)}}, externalZoneID, zoneName)
+			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
 			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE (date = $1) AND zone_id = ZON").
@@ -268,7 +268,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			ID:     id.String(),
 			Date:   date,
 			Zone:   domain.ZoneDto{ID: zoneID.String(), ExternalID: externalZoneID, Name: zoneName},
-			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float32(0.1234)}}},
+			Values: []domain.HourlyPriceDto{{Datetime: date, Value: float64(0.1234)}}},
 		)
 		require.NoError(t, err)
 

@@ -21,7 +21,7 @@ type PricesDto struct {
 // Used as a part of PricesDto and only to build a Prices domain entity.
 type HourlyPriceDto struct {
 	Datetime string
-	Value    float32
+	Value    float64
 }
 
 // Prices is the domain entity that represents PVPC prices for a day.
@@ -37,7 +37,7 @@ type Prices struct {
 // which is linked to the parent Prices entity.
 type HourlyPrice struct {
 	datetime time.Time
-	value    float32
+	value    float64
 }
 
 // PricesID represents the Prices' unique identifier.
@@ -153,7 +153,7 @@ func (p HourlyPrice) Datetime() time.Time {
 }
 
 // Value returns the HourlyPrice's value.
-func (p HourlyPrice) Value() float32 {
+func (p HourlyPrice) Value() float64 {
 	return p.value
 }
 

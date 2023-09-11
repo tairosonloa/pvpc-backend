@@ -3,7 +3,7 @@ package esiosapi
 type fetchPVPCPricesResponse struct {
 	Indicator struct {
 		Values []struct {
-			Value       float32 `json:"value"`
+			Value       float64 `json:"value"`
 			Datetime    string  `json:"datetime"`
 			DatetimeUTC string  `json:"datetime_utc"`
 			TzTime      string  `json:"tz_time"`

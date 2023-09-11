@@ -30,7 +30,7 @@ type hourlyPriceSchemaSlice []hourlyPriceSchema
 
 type hourlyPriceSchema struct {
 	Datetime string  `json:"datetime"`
-	Price    float32 `json:"value"`
+	Price    float64 `json:"value"`
 }
 
 // Make the hourlyPriceSchemaSlice type implement the driver.Value interface.
