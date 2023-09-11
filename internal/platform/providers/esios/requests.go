@@ -1,4 +1,4 @@
-package esiosapi
+package esios
 
 type fetchPVPCPricesRequest struct {
 	StartDate string   `url:"start_date"`

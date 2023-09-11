@@ -1,4 +1,4 @@
-package esiosapi
+package esios
 
 import (
 	"context"
@@ -22,9 +22,9 @@ const (
 	pvpcPricesEndpoint = "/indicators/1001"
 )
 
-func NewEsiosAPI(baseUrl string) *EsiosAPI {
+func NewEsiosAPI(baseUrl, token string) *EsiosAPI {
 	return &EsiosAPI{
-		client: sling.New().Base(baseUrl),
+		client: sling.New().Base(baseUrl).Add("x-api-key", token),
 	}
 }
 

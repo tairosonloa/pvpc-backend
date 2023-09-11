@@ -1,4 +1,4 @@
-package esiosapi
+package esios
 
 type fetchPVPCPricesResponse struct {
 	Indicator struct {
