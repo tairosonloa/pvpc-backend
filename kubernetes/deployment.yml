@@ -16,8 +16,6 @@ spec:
       containers:
         - name: pvpc-backend
           image: ghcr.io/tairosonloa/pvpc-backend
-          imagePullSecrets:
-            - name: dockerconfigjson-github-com
           envFrom:
           - secretRef:
               name: pvpc-backend-secrets

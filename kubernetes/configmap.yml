@@ -4,10 +4,10 @@ metadata:
   name: pvpc-backend-configmap
   namespace: pvpc
 data:
-  PVPC_ENV: prod
-  PVPC_LOG_LEVEL: debug
-  PVPC_REDATA_API_URL: https://apidatos.ree.es
-  PVPC_ESIOS_API_URL: https://api.esios.ree.es
-  PVPC_DB_DbHost: postgres.postgres.svc
-  PVPC_DB_PORT: 5432
-  PVPC_DB_NAME: pvpc-backend
+  PVPC_ENV: "prod"
+  PVPC_LOG_LEVEL: "debug"
+  PVPC_REDATA_API_URL: 'https://apidatos.ree.es'
+  PVPC_ESIOS_API_URL: "https://api.esios.ree.es"
+  PVPC_DB_HOST: "postgres.postgres.svc"
+  PVPC_DB_PORT: "5432"
+  PVPC_DB_NAME: "pvpc-backend"
