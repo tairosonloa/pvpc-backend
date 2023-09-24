@@ -36,9 +36,12 @@ func main() {
 		return
 	}
 
+	logger.Info("Running migrations", "command", args[0])
 	command := args[0]
 
 	cfg := loadConfig()
+
+	logger.Info("Opening DB connection...")
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName)
 	db, err := goose.OpenDBWithDriver("pgx", connStr)
 	if err != nil {
@@ -51,12 +54,16 @@ func main() {
 		}
 	}()
 
+	logger.Info("Running migrations...")
 	if err := goose.Run(command, db, *dir, args[1:]...); err != nil {
 		logger.Fatal("Migrate error", "err", err, "command", command)
+	} else {
+		logger.Info("Migrations completed")
 	}
 }
 
 func loadConfig() config {
+	logger.Info("Loading config...")
 	var cfg config
 	if err := godotenv.Load(); err != nil {
 		logger.Warn("Error loading .env file", "err", err)
@@ -64,6 +71,7 @@ func loadConfig() config {
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
 		logger.Fatal("Error processing env config", "err", err)
 	}
+	logger.Info("Config loaded", "config", cfg)
 	return cfg
 }
 
