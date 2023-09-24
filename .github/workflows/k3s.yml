@@ -1,0 +1,61 @@
+name: k3s
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/pvpc-backend:${{ github.sha }}
+  Deploy:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Kubernetes set context
+        uses: Azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Deploy
+        uses: Azure/k8s-deploy@v4.4
+        with:
+          action: deploy
+          strategy: basic
+          imagepullsecrets: |
+            dockerconfigjson-github-com
+          manifests: |
+            ./kubernetes/configmap.yml
+            ./kubernetes/deployment.yml
+            ./kubernetes/service.yml
+          images: ghcr.io/${{ github.repository }}/pvpc-backend:${{ github.sha }}
