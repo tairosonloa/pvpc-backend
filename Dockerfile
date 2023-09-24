@@ -1,13 +1,21 @@
-FROM golang:alpine
+FROM golang:alpine AS builder
 
-WORKDIR /pvpc-backend
+WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY cmd internal pkg ./
+COPY cmd/ ./cmd/
+COPY pkg/ ./pkg/
+COPY internal/ ./internal/
 
-RUN go build -o ./bin/api ./cmd/http \
-  && go build -o ./bin/migrate ./cmd/migrate
+RUN CGO_ENABLED=0 go build -o /app/bin/http ./cmd/http/
+RUN CGO_ENABLED=0 go build -o /app/bin/migrate ./cmd/migrate/
 
-CMD ["/pvpc-backend/bin/api"]
+FROM alpine:latest
+
 EXPOSE 8080
+
+COPY --from=builder /app/bin/http /app/bin/http
+COPY --from=builder /app/bin/migrate /app/bin/migrate
+
+CMD ["/app/bin/migrate && /app/bin/http"]
