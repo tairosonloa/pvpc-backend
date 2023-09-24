@@ -52,6 +52,7 @@ jobs:
         with:
           action: deploy
           strategy: basic
+          namespace: pvpc
           imagepullsecrets: |
             dockerconfigjson-github-com
           manifests: |
