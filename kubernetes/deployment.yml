@@ -23,15 +23,15 @@ spec:
               name: pvpc-backend-configmap
           ports:
             - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: /v1/health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /v1/health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 5
+          # livenessProbe:
+          #   httpGet:
+          #     path: /v1/health
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /v1/health
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
