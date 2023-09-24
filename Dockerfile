@@ -15,7 +15,9 @@ FROM alpine:latest
 
 EXPOSE 8080
 
+COPY scripts/start.sh /app/start.sh
+COPY internal/platform/storage/postgresql/migrations /app/migrations
 COPY --from=builder /app/bin/http /app/bin/http
 COPY --from=builder /app/bin/migrate /app/bin/migrate
 
-CMD ["/app/bin/migrate && /app/bin/http"]
+CMD ["/app/start.sh"]

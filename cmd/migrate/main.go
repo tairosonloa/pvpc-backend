@@ -59,7 +59,7 @@ func main() {
 func loadConfig() config {
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		logger.Fatal("Error loading .env file", "err", err)
+		logger.Warn("Error loading .env file", "err", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
 		logger.Fatal("Error processing env config", "err", err)
