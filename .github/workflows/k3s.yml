@@ -26,7 +26,7 @@ jobs:
           platforms: linux/amd64
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/pvpc-backend:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }},ghcr.io/${{ github.repository }}:latest
   Deploy:
     needs: Build
     runs-on: ubuntu-latest
