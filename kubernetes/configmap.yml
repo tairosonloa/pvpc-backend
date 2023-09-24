@@ -6,6 +6,8 @@ metadata:
 data:
   PVPC_ENV: "prod"
   PVPC_LOG_LEVEL: "debug"
+  PVPC_HOST: "0.0.0.0"
+  PVPC_PORT: "8080"
   PVPC_REDATA_API_URL: 'https://apidatos.ree.es'
   PVPC_ESIOS_API_URL: "https://api.esios.ree.es"
   PVPC_DB_HOST: "postgres.postgres.svc"
