@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fetch-prices
+  namespace: pvpc
+spec:
+  schedule: "0 21 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: fetch-prices
+            image: curlimages/curl:latest
+            args:
+            - /bin/sh
+            - -ec
+            - "curl -X POST  \"http://pvpc-backend:8080/v1/prices\""
+          restartPolicy: OnFailure
