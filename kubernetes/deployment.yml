@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pvpc-backend
+  namespace: pvpc
+spec:
+  selector:
+    matchLabels:
+      app: pvpc-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pvpc-backend
+    spec:
+      containers:
+        - name: pvpc-backend
+          image: ghcr.io/tairosonloa/pvpc-backend
+          envFrom:
+          - secretRef:
+              name: pvpc-backend-secrets
+          - configMapRef:
+              name: pvpc-backend-configmap
+          ports:
+            - containerPort: 8080
+          # livenessProbe:
+          #   httpGet:
+          #     path: /v1/health
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /v1/health
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5

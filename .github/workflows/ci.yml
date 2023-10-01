@@ -9,7 +9,7 @@ jobs:
   Prepare:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Go
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Prepare
     steps:
-      - name: Fetch code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Go
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Prepare
     steps:
-      - name: Fetch code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Go
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Prepare
     steps:
-      - name: Fetch code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Go

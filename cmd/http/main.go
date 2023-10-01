@@ -44,6 +44,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Error connecting to database", "err", err)
 	}
+	logger.Debug("Database connection established")
 	defer db.Close()
 
 	srv := server.NewHttpServer(cfg.Host, cfg.Port, cfg.Env, cfg.ShutdownTimeout, db, cfg.DbTimeout, cfg.RedataApiUrl, cfg.EsiosApiUrl, cfg.EsiosApiToken)
@@ -56,22 +57,26 @@ func configureLogger(level string) {
 }
 
 func loadConfig() config {
+	logger.Debug("Loading config...")
 	var cfg config
 	if err := godotenv.Load(); err != nil {
-		logger.Fatal("Error loading .env file", "err", err)
+		logger.Warn("Error loading .env file", "err", err)
 	}
 	if err := envconfig.Process("PVPC", &cfg); err != nil {
 		logger.Fatal("Error processing env config", "err", err)
 	}
+	logger.Debug("Config loaded", "config", cfg)
 	return cfg
 }
 
 func databaseConnection(user, pass, host string, port uint, name string, timeout time.Duration) (*sql.DB, error) {
+	logger.Debug("Connecting to database...")
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?connect_timeout=%d", user, pass, host, port, name, timeout)
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		return nil, err
 	}
+	logger.Debug("Testing database connection...")
 	err = db.Ping()
 	return db, err
 }
