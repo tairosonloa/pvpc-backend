@@ -1,7 +1,7 @@
 name: k3s
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
