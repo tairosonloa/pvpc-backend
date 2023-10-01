@@ -13,6 +13,8 @@ RUN CGO_ENABLED=0 go build -o /app/bin/migrate ./cmd/migrate/
 
 FROM alpine:latest
 
+RUN apk add --no-cache tzdata
+
 EXPOSE 8080
 
 COPY scripts/start.sh /app/start.sh
