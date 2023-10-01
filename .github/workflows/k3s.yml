@@ -59,4 +59,4 @@ jobs:
             ./kubernetes/configmap.yml
             ./kubernetes/deployment.yml
             ./kubernetes/service.yml
-          images: ghcr.io/${{ github.repository }}/pvpc-backend:${{ github.sha }}
+          images: ghcr.io/${{ github.repository }}:${{ github.sha }}
