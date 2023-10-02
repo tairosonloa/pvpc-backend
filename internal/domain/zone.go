@@ -53,8 +53,10 @@ func (id ZoneID) String() string {
 type ZonesRepository interface {
 	// GetAll returns all the prices zones.
 	GetAll(ctx context.Context) ([]Zone, error)
+
 	// GetByID returns the prices zone with the given ID.
 	GetByID(ctx context.Context, id ZoneID) (Zone, error)
+
 	// GetByExternalID returns the prices zone with the given external ID.
 	GetByExternalID(ctx context.Context, externalID string) (Zone, error)
 }

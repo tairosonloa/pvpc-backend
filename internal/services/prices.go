@@ -136,3 +136,8 @@ func (s PricesService) FetchAndStorePricesFromREE(ctx context.Context) ([]domain
 	}
 	return pricesIDs, nil
 }
+
+func (s PricesService) GetPrices(ctx context.Context, zoneID *domain.ZoneID, date *time.Time) ([]domain.Prices, error) {
+	return s.pricesRepository.Query(ctx, zoneID, date)
+
+}

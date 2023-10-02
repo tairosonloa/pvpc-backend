@@ -9,12 +9,12 @@ import (
 	"pvpc-backend/internal/services"
 )
 
-type response struct {
+type createPricesResponse struct {
 	IDs []string `json:"IDs"`
 }
 
-// CreatePricesV1 returns a gin.HandlerFunc to fetch and store PVPC prices.
-func CreatePricesV1(pricesService services.PricesService) gin.HandlerFunc {
+// CreatePricesHandlerV1 returns a gin.HandlerFunc to fetch and store PVPC prices.
+func CreatePricesHandlerV1(pricesService services.PricesService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ids, err := pricesService.FetchAndStorePricesFromREE(ctx)
 		if err != nil {
@@ -23,7 +23,7 @@ func CreatePricesV1(pricesService services.PricesService) gin.HandlerFunc {
 			return
 		}
 
-		response := response{
+		response := createPricesResponse{
 			IDs: make([]string, len(ids)),
 		}
 

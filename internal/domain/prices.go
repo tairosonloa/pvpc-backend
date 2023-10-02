@@ -71,6 +71,7 @@ func (id PricesID) String() string {
 type PricesRepository interface {
 	// Save persists the given prices.
 	Save(ctx context.Context, prices []Prices) error
+
 	// Query returns the prices for the given date and zoneID.
 	//
 	// If zoneID is nil, it returns the prices for all zones.

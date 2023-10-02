@@ -170,7 +170,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
-			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE zone_id = ZON ORDER BY date DESC LIMIT 1").
+			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE zone_id = 'ZON' ORDER BY date DESC LIMIT 1").
 			WillReturnRows(rows)
 
 		repo := NewPricesRepository(db, 1*time.Millisecond)
@@ -255,7 +255,7 @@ func Test_PricesRepository_Query(t *testing.T) {
 			AddRow(id.String(), date, zoneID.String(), hourlyPriceSchemaSlice{{Datetime: date, Price: float64(0.1234)}}, externalZoneID, zoneName)
 
 		sqlMock.ExpectQuery(
-			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE (date = $1) AND zone_id = ZON").
+			"SELECT prices.id, prices.date, prices.zone_id, prices.values, zones.external_id, zones.name FROM prices JOIN zones ON prices.zone_id = zones.id WHERE (date = $1) AND zone_id = 'ZON'").
 			WithArgs(dateTime.Format("2006-01-02")).
 			WillReturnRows(rows)
 
