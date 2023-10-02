@@ -85,8 +85,8 @@ func (s *HttpServer) registerRoutes() {
 	s.engine.GET("/v1/health", health.HealthCheckHandlerV1(s.storage.db, s.storage.dbTimeout))
 
 	// Prices
-	s.engine.GET("/v1/prices", prices.GetPricesV1(s.services.pricesService))
-	s.engine.POST("/v1/prices", prices.CreatePricesV1(s.services.pricesService))
+	s.engine.GET("/v1/prices", prices.GetPricesHandlerV1(s.services.pricesService))
+	s.engine.POST("/v1/prices", prices.CreatePricesHandlerV1(s.services.pricesService))
 
 	// Zones
 	s.engine.GET("/v1/zones", zones.ListZonesHandlerV1(s.services.zonesService))

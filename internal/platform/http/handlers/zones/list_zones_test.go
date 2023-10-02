@@ -22,10 +22,10 @@ func Test_ListZonesHandlerV1_Success(t *testing.T) {
 	logger.SetTestLogger(os.Stderr)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
-	listingService := services.NewZonesService(repositoryMock)
+	zonesService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(zonesService))
 
 	zone1, err := domain.NewZone(domain.ZoneDto{
 		ID:         "ABC",
@@ -65,10 +65,10 @@ func Test_ListZonesHandlerV1_Empty(t *testing.T) {
 	logger.SetTestLogger(os.Stderr)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
-	listingService := services.NewZonesService(repositoryMock)
+	zonesService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(zonesService))
 
 	repositoryMock.On(
 		"GetAll",
@@ -92,10 +92,10 @@ func Test_ListZonesHandlerV1_Error(t *testing.T) {
 	logger.SetTestLogger(os.Stderr)
 	gin.SetMode(gin.TestMode)
 	repositoryMock := new(mocks.ZonesRepository)
-	listingService := services.NewZonesService(repositoryMock)
+	zonesService := services.NewZonesService(repositoryMock)
 
 	r := gin.New()
-	r.GET("/v1/zones", ListZonesHandlerV1(listingService))
+	r.GET("/v1/zones", ListZonesHandlerV1(zonesService))
 
 	repositoryMock.On(
 		"GetAll",

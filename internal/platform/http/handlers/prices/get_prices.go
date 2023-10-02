@@ -29,8 +29,8 @@ type hourlyPriceResponse struct {
 	Value    float64 `json:"value"`
 }
 
-// GetPricesV1 returns a gin.HandlerFunc to retrieve prices from storage.
-func GetPricesV1(pricesService services.PricesService) gin.HandlerFunc {
+// GetPricesHandlerV1 returns a gin.HandlerFunc to retrieve prices from storage.
+func GetPricesHandlerV1(pricesService services.PricesService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		zoneID, date := parseGetPricesParams(ctx, ctx.Request.URL.Query())
@@ -64,7 +64,7 @@ func GetPricesV1(pricesService services.PricesService) gin.HandlerFunc {
 		if len(response.Prices) == 0 {
 			ctx.JSON(http.StatusNotFound, response)
 		} else {
-			ctx.JSON(http.StatusCreated, response)
+			ctx.JSON(http.StatusOK, response)
 		}
 	}
 }
