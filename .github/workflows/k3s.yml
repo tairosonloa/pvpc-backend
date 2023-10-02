@@ -59,4 +59,5 @@ jobs:
             ./kubernetes/configmap.yml
             ./kubernetes/deployment.yml
             ./kubernetes/service.yml
+            ./kubernetes/cronjob.yml
           images: ghcr.io/${{ github.repository }}:${{ github.sha }}

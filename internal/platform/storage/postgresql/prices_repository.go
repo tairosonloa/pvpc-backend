@@ -103,7 +103,7 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 
 // Query implements the domain.PricesRepository interface.
 func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, date *time.Time) ([]domain.Prices, error) {
-	logger.DebugContext(ctx, "Getting all Zones from database")
+	logger.DebugContext(ctx, "Querying prices from database", "zoneID", zoneID, "date", date)
 	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
 
 	query := sqlbuilder.NewSelectBuilder().Select("prices.id", "prices.date", "prices.zone_id", "prices.values", "zones.external_id", "zones.name").
