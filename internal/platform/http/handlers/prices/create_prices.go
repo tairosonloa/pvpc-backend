@@ -9,7 +9,7 @@ import (
 	"pvpc-backend/internal/services"
 )
 
-type response struct {
+type createPricesResponse struct {
 	IDs []string `json:"IDs"`
 }
 
@@ -23,7 +23,7 @@ func CreatePricesV1(pricesService services.PricesService) gin.HandlerFunc {
 			return
 		}
 
-		response := response{
+		response := createPricesResponse{
 			IDs: make([]string, len(ids)),
 		}
 

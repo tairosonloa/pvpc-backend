@@ -103,7 +103,7 @@ func (r *PricesRepository) Save(ctx context.Context, prices []domain.Prices) err
 
 // Query implements the domain.PricesRepository interface.
 func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, date *time.Time) ([]domain.Prices, error) {
-	logger.DebugContext(ctx, "Querying prices from database", "zoneID", zoneID, "date", date)
+	logger.DebugContext(ctx, "Querying prices from database", "zoneID", fmt.Sprintf("%v", zoneID), "date", date)
 	pricesSQL := sqlbuilder.NewStruct(new(pricesSchema))
 
 	query := sqlbuilder.NewSelectBuilder().Select("prices.id", "prices.date", "prices.zone_id", "prices.values", "zones.external_id", "zones.name").
@@ -116,17 +116,18 @@ func (r *PricesRepository) Query(ctx context.Context, zoneID *domain.ZoneID, dat
 				From(pricesTableName).Join(zonesTableName, "prices.zone_id = zones.id").
 				OrderBy("prices.zone_id", "prices.date").Desc()
 		} else {
-			query = query.Where((fmt.Sprintf("zone_id = %s", zoneID.String()))).OrderBy("date").Desc().Limit(1)
+			query = query.Where((fmt.Sprintf("zone_id = '%s'", zoneID.String()))).OrderBy("date").Desc().Limit(1)
 		}
 	} else {
 		if zoneID == nil {
 			query = query.Where(query.Equal("date", date.Format("2006-01-02")))
 		} else {
-			query = query.Where(query.And(query.Equal("date", date.Format("2006-01-02"))), fmt.Sprintf("zone_id = %s", zoneID.String()))
+			query = query.Where(query.And(query.Equal("date", date.Format("2006-01-02"))), fmt.Sprintf("zone_id = '%s'", zoneID.String()))
 		}
 	}
 
 	querySQL, args := sqlbuilder.WithFlavor(query, sqlbuilder.PostgreSQL).Build()
+	logger.DebugContext(ctx, "Querying prices from database", "query", querySQL, "args", args)
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
