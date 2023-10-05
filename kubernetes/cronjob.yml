@@ -5,6 +5,8 @@ metadata:
   namespace: pvpc
 spec:
   schedule: "0 21 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
